@@ -1,0 +1,162 @@
+---
+title: "csc3007-cyan2"
+author: "ONG ZHEN YU BRANDON, GOH BOON CHUN, CHNG JUN JIE JEREMY, EISEN REINER BAGUILAT PERDIDO, MAGESHWARAN SO MUTHUSAMY"
+format: html
+number-sections: true
+knitr:
+  opts_chunk:
+    fig.width: 7.5
+    fig.height: 5
+    fig.align: center
+    out.width: 100%
+---
+
+```{r}
+library(readr)
+library(ggplot2)
+library(e1071)
+library(readxl)
+library(gridExtra)
+library(tidyverse)
+library(countrycode)
+library(sf)
+library(tmap)
+library(lintr)
+library(plotly)
+```
+
+```{r}
+### Read data
+# https://unstats-undesa.opendata.arcgis.com/datasets/undesa::indicator-3-9-2-mortality-rate-attributed-to-unsafe-water-unsafe-sanitation-and-lack-of-hygiene-deaths-per-100-000-population/explore?location=4.310115%2C1.385045%2C3.26
+death_water_hygiene <- read_csv("./data/indicator_3.9.2.csv")
+# https://unstats-undesa.opendata.arcgis.com/datasets/undesa::indicator-6-1-1-proportion-of-population-using-safely-managed-drinking-water-services-by-urban-rural-percent/explore
+water_services_data <- read_csv("./data/indicator_6.1.1.csv")
+
+```
+
+### Merge dataset
+
+```{r}
+merged_data <- merge(death_water_hygiene, water_services_data, by=c('geoAreaCode', 'geoAreaName'))
+
+# Display the first few rows of the merged dataframe
+head(merged_data)
+```
+
+```{r}
+# Create a scatter plot of the two variables
+p <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
+  geom_point(aes(text = paste("Country:", geoAreaName))) +
+  geom_smooth(method = loess, se = FALSE, color = "red") +
+  labs(x = "Mortality Rate (deaths per 100,000 population)", 
+       y = "Population Using Safely Managed Drinking Water Services (%)",
+       title = "Correlation between Mortality Rate and Water Services") +
+  theme_minimal()
+
+# Convert to a plotly plot
+gp <- ggplotly(p, tooltip = "text")
+
+# Print the plot
+print(gp)
+```
+
+### 
+
+```{r}
+# Calculate correlation
+correlation <- cor(merged_data$latest_value.x, merged_data$latest_value.y)
+
+# Plot the data
+plot_loess <- ggplot(merged_data, aes(x = latest_value.x, 
+                                      y = latest_value.y)) +
+  
+  geom_point(aes(size = latest_value.x, 
+                 color = parentName.x, 
+                 text = paste("Country:", geoAreaName))) +
+  
+  geom_smooth(method = loess, se = FALSE, 
+              color = "red",
+              linetype = "dashed",
+              aes(weight = NULL,
+                    fill = "red"),
+              show.legend = TRUE) +
+  
+  geom_smooth(method = loess,
+              se = FALSE,
+              color = "blue",
+              aes(weight = latest_value.y, #weighted towards drinking water services
+                  fill = "blue"),
+              show.legend = TRUE) +
+  
+  labs(x = "Mortality Rate (deaths per 100,000 population)",
+       y = "Population Using Safely Managed Drinking Water Services (%)",
+       title = "Correlation between Mortality Rate and Water Services",
+       color = "Region",
+       size = "Mortality Rate") +
+  
+  theme_minimal() +
+  annotate("text",
+           x = mean(merged_data$latest_value.x),
+           y = mean(merged_data$latest_value.y),
+           label = paste("Correlation:",
+                         round(correlation, 2)),
+           size = 5,
+           color = "black",
+           vjust = 0)
+
+# Convert to a plotly plot
+gp <- ggplotly(plot_loess, tooltip = "text")
+
+# Print the plot
+print(gp)
+
+
+```
+
+### 
+
+```{r}
+N <- 20
+data_top <- death_water_hygiene |>
+  group_by(parentName) |>
+  top_n(N, latest_value)
+
+# Create a ggplot2 bar chart
+p <- ggplot(data = data_top, aes(x = reorder(geoAreaName, -latest_value), y = latest_value, fill = parentName)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 20 Countries with Highest Mortality Rate in Each Region",
+       subtitle = "Attributed to Unsafe Water, Sanitation, and Lack of Hygiene in the Latest Available Year",
+       x = "",
+       y = "Mortality Rate (deaths per 100,000 population)") +
+  theme(axis.text.x = element_blank()) +
+  facet_wrap(~ parentName, scales = "free_x")
+
+ggplotly(p, tooltip = "x")
+```
+
+### 2. Load GeoJSON data
+
+```{r}
+data_3_9_2_map  <- read_sf("./data/indicator_3.9.2.geojson")
+points <- st_read("./data/indicator_3.9.2.gdb.zip")
+land <- st_read("./data/WB_Land.geojson")
+# Print the structure of the objects
+land
+```
+
+```{r}
+st_layers("./data/Indicator_3.9.2_SHP/Indicator_3_9_2__Series_SH_STA_WASH.shp")
+```
+
+```{r}
+
+tmap_options(check.and.fix = TRUE)
+# Plot the data
+tm_shape(data_3_9_2_area) +
+  tm_dots("latest_value", title = "Mortality Rate") +
+  tm_layout(main.title = "Mortality Rate due to Unsafe Water, Sanitation, and Lack of Hygiene")
+
+# Overlay polygon data
+tm_shape(land) +
+  tm_polygons(col = "red", alpha = 0.5)
+```
