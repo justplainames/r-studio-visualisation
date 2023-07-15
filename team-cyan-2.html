@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="ONG ZHEN YU BRANDON, GOH BOON CHUN, CHNG JUN JIE JEREMY, EISEN REINER BAGUILAT PERDIDO, MAGESHWARAN SO MUTHUSAMY">
+
+<title>csc3007-cyan2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="team-cyan-2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="team-cyan-2_files/libs/quarto-html/quarto.js"></script>
+<script src="team-cyan-2_files/libs/quarto-html/popper.min.js"></script>
+<script src="team-cyan-2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="team-cyan-2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="team-cyan-2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="team-cyan-2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="team-cyan-2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="team-cyan-2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="team-cyan-2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">csc3007-cyan2</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>ONG ZHEN YU BRANDON, GOH BOON CHUN, CHNG JUN JIE JEREMY, EISEN REINER BAGUILAT PERDIDO, MAGESHWARAN SO MUTHUSAMY </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'readr' was built under R version 4.3.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.3.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'e1071' was built under R version 4.3.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gridExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'gridExtra' was built under R version 4.3.1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ stringr   1.5.0
+✔ forcats   1.0.0     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.1     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::combine() masks gridExtra::combine()
+✖ dplyr::filter()  masks stats::filter()
+✖ dplyr::lag()     masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(countrycode)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'sf' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.11.2, GDAL 3.6.2, PROJ 9.2.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'tmap' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
+which was just loaded, will retire in October 2023.
+Please refer to R-spatial evolution reports for details, especially
+https://r-spatial.org/r/2023/05/15/evolution4.html.
+It may be desirable to make the sf package available;
+package maintainers should consider adding sf to Suggests:.
+The sp package is now running under evolution status 2
+     (status 2 uses the sf package in place of rgdal)</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lintr)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'plotly' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'plotly'
+
+The following object is masked from 'package:ggplot2':
+
+    last_plot
+
+The following object is masked from 'package:stats':
+
+    filter
+
+The following object is masked from 'package:graphics':
+
+    layout</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Read data</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://unstats-undesa.opendata.arcgis.com/datasets/undesa::indicator-3-9-2-mortality-rate-attributed-to-unsafe-water-unsafe-sanitation-and-lack-of-hygiene-deaths-per-100-000-population/explore?location=4.310115%2C1.385045%2C3.26</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>death_water_hygiene <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"./data/indicator_3.9.2.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 199 Columns: 37
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (19): goal_labelEN, goal_descEN, target_descEN, indicator_code, indicato...
+dbl (15): ObjectId, goal_code, target_code, geoAreaCode, level_, parentCode,...
+lgl  (3): UnitMultiplier, timeSeries_keys, footnotes
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://unstats-undesa.opendata.arcgis.com/datasets/undesa::indicator-6-1-1-proportion-of-population-using-safely-managed-drinking-water-services-by-urban-rural-percent/explore</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>water_services_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"./data/indicator_6.1.1.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 325 Columns: 59
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (22): goal_labelEN, goal_descEN, target_descEN, indicator_code, indicato...
+dbl (35): ObjectId, goal_code, target_code, geoAreaCode, level_, parentCode,...
+lgl  (2): UnitMultiplier, footnotes
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="merge-dataset" class="level3" data-number="0.1">
+<h3 data-number="0.1" class="anchored" data-anchor-id="merge-dataset"><span class="header-section-number">0.1</span> Merge dataset</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(death_water_hygiene, water_services_data, <span class="at">by=</span><span class="fu">c</span>(<span class="st">'geoAreaCode'</span>, <span class="st">'geoAreaName'</span>))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the merged dataframe</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  geoAreaCode geoAreaName ObjectId.x goal_code.x goal_labelEN.x
+1         100    Bulgaria        113           3         Goal 3
+2         104     Myanmar          7           3         Goal 3
+3         104     Myanmar          7           3         Goal 3
+4         104     Myanmar          7           3         Goal 3
+5         112     Belarus        102           3         Goal 3
+6         116    Cambodia        117           3         Goal 3
+                                                    goal_descEN.x target_code.x
+1 Ensure healthy lives and promote well-being for all at all ages           3.9
+2 Ensure healthy lives and promote well-being for all at all ages           3.9
+3 Ensure healthy lives and promote well-being for all at all ages           3.9
+4 Ensure healthy lives and promote well-being for all at all ages           3.9
+5 Ensure healthy lives and promote well-being for all at all ages           3.9
+6 Ensure healthy lives and promote well-being for all at all ages           3.9
+                                                                                                                                target_descEN.x
+1 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+2 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+3 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+4 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+5 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+6 By 2030, substantially reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+  indicator_code.x indicator_reference.x
+1          C030902                 3.9.2
+2          C030902                 3.9.2
+3          C030902                 3.9.2
+4          C030902                 3.9.2
+5          C030902                 3.9.2
+6          C030902                 3.9.2
+                                                                                                                                           indicator_descEN.x
+1 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+2 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+3 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+4 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+5 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+6 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services)
+  series_release.x
+1     2021.Q2.G.03
+2     2021.Q2.G.03
+3     2021.Q2.G.03
+4     2021.Q2.G.03
+5     2021.Q2.G.03
+6     2021.Q2.G.03
+                                                                                                   series_tags.x
+1 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+2 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+3 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+4 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+5 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+6 ['hygiene', 'health', 'mortality', 'death', 'water-related diseases', 'sanitation', 'water', 'drinking water']
+     series.x
+1 SH_STA_WASH
+2 SH_STA_WASH
+3 SH_STA_WASH
+4 SH_STA_WASH
+5 SH_STA_WASH
+6 SH_STA_WASH
+                                                                                               seriesDescription.x
+1 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+2 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+3 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+4 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+5 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+6 Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (deaths per 100,000 population)
+  level_.x parentCode.x       parentName.x  type.x       X.x      Y.x ISO3.x
+1        5          151     Eastern Europe Country  25.23763 42.75731    BGR
+2        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+3        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+4        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+5        5          151     Eastern Europe Country  28.04940 53.54193    BLR
+6        4           35 South-Eastern Asia Country 104.92284 12.71164    KHM
+  UN_Member.x Country_Profile.x UnitMultiplier.x   Units_code.x
+1           1                 1               NA PER_100000_POP
+2           1                 1               NA PER_100000_POP
+3           1                 1               NA PER_100000_POP
+4           1                 1               NA PER_100000_POP
+5           1                 1               NA PER_100000_POP
+6           1                 1               NA PER_100000_POP
+            Units_desc.x timeSeries_id.x timeSeries_keys.x n_years.x min_year.x
+1 Per 100,000 population     SH_STA_WASH                NA         1       2016
+2 Per 100,000 population     SH_STA_WASH                NA         1       2016
+3 Per 100,000 population     SH_STA_WASH                NA         1       2016
+4 Per 100,000 population     SH_STA_WASH                NA         1       2016
+5 Per 100,000 population     SH_STA_WASH                NA         1       2016
+6 Per 100,000 population     SH_STA_WASH                NA         1       2016
+  max_year.x years.x value_2016.x latest_value.x footnotes.x          nature.x
+1       2016  [2016]          0.1            0.1          NA E: Estimated data
+2       2016  [2016]         12.6           12.6          NA E: Estimated data
+3       2016  [2016]         12.6           12.6          NA E: Estimated data
+4       2016  [2016]         12.6           12.6          NA E: Estimated data
+5       2016  [2016]          0.1            0.1          NA E: Estimated data
+6       2016  [2016]          6.5            6.5          NA E: Estimated data
+  ObjectId.y goal_code.y goal_labelEN.y
+1        263           6         Goal 6
+2        204           6         Goal 6
+3        203           6         Goal 6
+4        202           6         Goal 6
+5        250           6         Goal 6
+6        264           6         Goal 6
+                                                                   goal_descEN.y
+1 Ensure availability and sustainable management of water and sanitation for all
+2 Ensure availability and sustainable management of water and sanitation for all
+3 Ensure availability and sustainable management of water and sanitation for all
+4 Ensure availability and sustainable management of water and sanitation for all
+5 Ensure availability and sustainable management of water and sanitation for all
+6 Ensure availability and sustainable management of water and sanitation for all
+  target_code.y
+1           6.1
+2           6.1
+3           6.1
+4           6.1
+5           6.1
+6           6.1
+                                                                                target_descEN.y
+1 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+2 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+3 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+4 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+5 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+6 By 2030, achieve universal and equitable access to safe and affordable drinking water for all
+  indicator_code.y indicator_reference.y
+1          C060101                 6.1.1
+2          C060101                 6.1.1
+3          C060101                 6.1.1
+4          C060101                 6.1.1
+5          C060101                 6.1.1
+6          C060101                 6.1.1
+                                                     indicator_descEN.y
+1 Proportion of population using safely managed drinking water services
+2 Proportion of population using safely managed drinking water services
+3 Proportion of population using safely managed drinking water services
+4 Proportion of population using safely managed drinking water services
+5 Proportion of population using safely managed drinking water services
+6 Proportion of population using safely managed drinking water services
+  series_release.y               series_tags.y    series.y
+1     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+2     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+3     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+4     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+5     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+6     2021.Q2.G.03 ['water', 'drinking water'] SH_H2O_SAFE
+                                                                        seriesDescription.y
+1 Proportion of population using safely managed drinking water services, by urban/rural (%)
+2 Proportion of population using safely managed drinking water services, by urban/rural (%)
+3 Proportion of population using safely managed drinking water services, by urban/rural (%)
+4 Proportion of population using safely managed drinking water services, by urban/rural (%)
+5 Proportion of population using safely managed drinking water services, by urban/rural (%)
+6 Proportion of population using safely managed drinking water services, by urban/rural (%)
+  level_.y parentCode.y       parentName.y  type.y       X.y      Y.y ISO3.y
+1        5          151     Eastern Europe Country  25.23763 42.75731    BGR
+2        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+3        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+4        4           35 South-Eastern Asia Country  96.51752 21.19333    MMR
+5        5          151     Eastern Europe Country  28.04940 53.54193    BLR
+6        4           35 South-Eastern Asia Country 104.92284 12.71164    KHM
+  UN_Member.y Country_Profile.y location_code location_desc UnitMultiplier.y
+1           1                 1            _T     All areas               NA
+2           1                 1             U         Urban               NA
+3           1                 1             R         Rural               NA
+4           1                 1            _T     All areas               NA
+5           1                 1            _T     All areas               NA
+6           1                 1            _T     All areas               NA
+  Units_code.y Units_desc.y timeSeries_id.y timeSeries_keys.y n_years.y
+1           PT   Percentage SH_H2O_SAFE___T          location        21
+2           PT   Percentage  SH_H2O_SAFE__U          location        21
+3           PT   Percentage  SH_H2O_SAFE__R          location        21
+4           PT   Percentage SH_H2O_SAFE___T          location        21
+5           PT   Percentage SH_H2O_SAFE___T          location        21
+6           PT   Percentage SH_H2O_SAFE___T          location        21
+  min_year.y max_year.y
+1       2000       2020
+2       2000       2020
+3       2000       2020
+4       2000       2020
+5       2000       2020
+6       2000       2020
+                                                                                                                         years.y
+1 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+2 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+3 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+4 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+5 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+6 [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020]
+  value_2000 value_2001 value_2002 value_2003 value_2004 value_2005 value_2006
+1         90         90         91         91         92         92         93
+2         51         52         54         56         58         59         61
+3         18         20         21         23         24         26         27
+4         27         29         30         32         33         35         37
+5         81         81         81         81         83         84         85
+6         17         17         18         18         19         19         20
+  value_2007 value_2008 value_2009 value_2010 value_2011 value_2012 value_2013
+1         93         94         94         95         95         96         96
+2         63         65         67         68         70         70         71
+3         29         30         32         34         35         37         39
+4         38         40         42         44         45         47         48
+5         86         88         89         90         91         92         93
+6         20         21         21         22         23         23         24
+  value_2014 value_2015 value_2016.y value_2017 value_2018 value_2019
+1         97         97           97         97         97         98
+2         71         71           72         72         73         73
+3         41         43           45         47         49         51
+4         50         51           53         54         56         58
+5         94         94           95         95         95         95
+6         24         25           25         26         27         27
+  value_2020 latest_value.y footnotes.y          nature.y
+1         98             98          NA E: Estimated data
+2         74             74          NA E: Estimated data
+3         52             52          NA E: Estimated data
+4         59             59          NA E: Estimated data
+5         95             95          NA E: Estimated data
+6         28             28          NA E: Estimated data</code></pre>
+</div>
+</div>
+</section>
+<section id="scatter-plot" class="level3" data-number="0.2">
+<h3 data-number="0.2" class="anchored" data-anchor-id="scatter-plot"><span class="header-section-number">0.2</span> 1. Scatter plot</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the data</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>plot_loess <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(merged_data, <span class="fu">aes</span>(<span class="at">x =</span> latest_value.x, <span class="at">y =</span> latest_value.y)) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> location_desc, </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">shape =</span> location_desc,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">text =</span> <span class="fu">paste</span>(<span class="st">"Country:"</span>, geoAreaName, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Location:"</span>, location_desc)), <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">subset</span>(merged_data, location_desc <span class="sc">==</span> <span class="st">"All areas"</span>),</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> loess, <span class="at">se =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">color =</span> location_desc, <span class="at">weight =</span> latest_value.y),</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">show.legend =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">subset</span>(merged_data, location_desc <span class="sc">==</span> <span class="st">"Urban"</span>),</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> loess,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">color =</span> location_desc, <span class="at">weight =</span> latest_value.y),</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">show.legend =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> <span class="fu">subset</span>(merged_data, location_desc <span class="sc">==</span> <span class="st">"Rural"</span>),</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> loess,</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>              <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">color =</span> location_desc, <span class="at">weight =</span> latest_value.y),</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>              <span class="at">show.legend =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Mortality Rate (deaths per 100,000 population)"</span>,</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Population Using Safely Managed Drinking Water Services (%)"</span>,</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Correlation between Mortality Rate and Water Services"</span>,</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Location Type"</span>,</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">shape =</span> <span class="st">"Location Type"</span>) <span class="sc">+</span></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">shape =</span> <span class="dv">16</span>)),</span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>         <span class="at">shape =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="st">"black"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in geom_point(aes(color = location_desc, shape = location_desc, :
+Ignoring unknown aesthetics: text</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a plotly plot</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>gp <span class="ot">&lt;-</span> <span class="fu">ggplotly</span>(plot_loess, <span class="at">tooltip =</span> <span class="st">"text"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'
+`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the plot</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="correlation-empty-plot" class="level3" data-number="0.3">
+<h3 data-number="0.3" class="anchored" data-anchor-id="correlation-empty-plot"><span class="header-section-number">0.3</span> Correlation Empty Plot</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate correlations</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>correlation_all <span class="ot">&lt;-</span> <span class="fu">cor</span>(merged_data<span class="sc">$</span>latest_value.x[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"All areas"</span>], </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>                       merged_data<span class="sc">$</span>latest_value.y[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"All areas"</span>])</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>correlation_urban <span class="ot">&lt;-</span> <span class="fu">cor</span>(merged_data<span class="sc">$</span>latest_value.x[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"Urban"</span>], </span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                         merged_data<span class="sc">$</span>latest_value.y[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"Urban"</span>])</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>correlation_rural <span class="ot">&lt;-</span> <span class="fu">cor</span>(merged_data<span class="sc">$</span>latest_value.x[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"Rural"</span>], </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                         merged_data<span class="sc">$</span>latest_value.y[merged_data<span class="sc">$</span>location_desc <span class="sc">==</span> <span class="st">"Rural"</span>])</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a blank plot</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>blank_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="st">"cm"</span>)) <span class="sc">+</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>,</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="fl">0.5</span>,</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> <span class="fl">0.5</span>,</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Correlation All:"</span>,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">round</span>(correlation_all, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>                         <span class="st">"Correlation Urban:"</span>,</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">round</span>(correlation_urban, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>                         <span class="st">"Correlation Rural:"</span>,</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">round</span>(correlation_rural, <span class="dv">2</span>)),</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">size =</span> <span class="dv">5</span>,</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a plotly plot</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>gp_text <span class="ot">&lt;-</span> <span class="fu">ggplotly</span>(blank_plot)</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the blank plot with correlation values</span></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(gp_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="histogram-without-transformation" class="level3" data-number="0.4">
+<h3 data-number="0.4" class="anchored" data-anchor-id="histogram-without-transformation"><span class="header-section-number">0.4</span> 1.5 Histogram (without Transformation)</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the latest_value.x variable into a categorical variable</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>merged_data<span class="sc">$</span>latest_value.x_cat <span class="ot">&lt;-</span> <span class="fu">cut</span>(merged_data<span class="sc">$</span>latest_value.x, <span class="at">breaks =</span> <span class="dv">10</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a stacked bar chart</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>stacked_bar_chart <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(merged_data, <span class="fu">aes</span>(<span class="at">x =</span> latest_value.x_cat, <span class="at">fill =</span> location_desc)) <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Mortality Rate (deaths per 100,000 population)"</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Stacked Bar Chart of Mortality Rates"</span>) <span class="sc">+</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a plotly plot</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>ggplot_stacked_bar_chart <span class="ot">&lt;-</span> <span class="fu">ggplotly</span>(stacked_bar_chart)</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the plot</span></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ggplot_stacked_bar_chart)</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a grouped bar chart</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>grouped_bar_chart <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(merged_data, <span class="fu">aes</span>(<span class="at">x =</span> latest_value.x_cat, <span class="at">fill =</span> location_desc)) <span class="sc">+</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Mortality Rate (deaths per 100,000 population)"</span>,</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Grouped Bar Chart of Mortality Rates"</span>) <span class="sc">+</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a plotly plot</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>ggplot_grouped_bar_chart <span class="ot">&lt;-</span> <span class="fu">ggplotly</span>(grouped_bar_chart)</span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the plot</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ggplot_grouped_bar_chart)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

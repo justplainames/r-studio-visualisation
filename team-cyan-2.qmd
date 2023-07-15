@@ -23,6 +23,7 @@ library(sf)
 library(tmap)
 library(lintr)
 library(plotly)
+library(MASS) # for boxcox normalisation
 ```
 
 ```{r}
@@ -43,120 +44,219 @@ merged_data <- merge(death_water_hygiene, water_services_data, by=c('geoAreaCode
 head(merged_data)
 ```
 
-```{r}
-# Create a scatter plot of the two variables
-p <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
-  geom_point(aes(text = paste("Country:", geoAreaName))) +
-  geom_smooth(method = loess, se = FALSE, color = "red") +
-  labs(x = "Mortality Rate (deaths per 100,000 population)", 
-       y = "Population Using Safely Managed Drinking Water Services (%)",
-       title = "Correlation between Mortality Rate and Water Services") +
-  theme_minimal()
 
-# Convert to a plotly plot
-gp <- ggplotly(p, tooltip = "text")
-
-# Print the plot
-print(gp)
-```
-
-### 
+### 1. Scatter plot
 
 ```{r}
-# Calculate correlation
-correlation <- cor(merged_data$latest_value.x, merged_data$latest_value.y)
-
 # Plot the data
-plot_loess <- ggplot(merged_data, aes(x = latest_value.x, 
-                                      y = latest_value.y)) +
+plot_loess <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
   
-  geom_point(aes(size = latest_value.x, 
-                 color = parentName.x, 
-                 text = paste("Country:", geoAreaName))) +
+  geom_point(aes(color = location_desc, 
+                 shape = location_desc,
+                 text = paste("Country:", geoAreaName, "<br>", "Location:", location_desc)), alpha = 0.7) +
   
-  geom_smooth(method = loess, se = FALSE, 
-              color = "red",
-              linetype = "dashed",
-              aes(weight = NULL,
-                    fill = "red"),
+  geom_smooth(data = subset(merged_data, location_desc == "All areas"),
+              method = loess, se = FALSE, 
+              aes(color = location_desc, weight = latest_value.y),
               show.legend = TRUE) +
   
-  geom_smooth(method = loess,
+  geom_smooth(data = subset(merged_data, location_desc == "Urban"),
+              method = loess,
               se = FALSE,
-              color = "blue",
-              aes(weight = latest_value.y, #weighted towards drinking water services
-                  fill = "blue"),
+              aes(color = location_desc, weight = latest_value.y),
+              show.legend = TRUE) +
+
+  geom_smooth(data = subset(merged_data, location_desc == "Rural"),
+              method = loess,
+              se = FALSE,
+              aes(color = location_desc, weight = latest_value.y),
               show.legend = TRUE) +
   
   labs(x = "Mortality Rate (deaths per 100,000 population)",
-       y = "Population Using Safely Managed Drinking Water Services (%)",
+       y = "Safely Managed Drinking Water Services (%)",
        title = "Correlation between Mortality Rate and Water Services",
-       color = "Region",
-       size = "Mortality Rate") +
+       color = "Location Type",
+       shape = "Location Type") +
   
   theme_minimal() +
-  annotate("text",
-           x = mean(merged_data$latest_value.x),
-           y = mean(merged_data$latest_value.y),
-           label = paste("Correlation:",
-                         round(correlation, 2)),
-           size = 5,
-           color = "black",
-           vjust = 0)
+  
+  guides(color = guide_legend(override.aes = list(shape = 16)),
+         shape = guide_legend(override.aes = list(color = "black")))
+
 
 # Convert to a plotly plot
 gp <- ggplotly(plot_loess, tooltip = "text")
 
 # Print the plot
 print(gp)
-
-
 ```
 
-### 
+### Correlation Empty Plot
+```{r}
+correlation_all <- cor(merged_data$latest_value.x[merged_data$location_desc == "All areas"], 
+                       merged_data$latest_value.y[merged_data$location_desc == "All areas"])
+
+correlation_urban <- cor(merged_data$latest_value.x[merged_data$location_desc == "Urban"], 
+                         merged_data$latest_value.y[merged_data$location_desc == "Urban"])
+
+correlation_rural <- cor(merged_data$latest_value.x[merged_data$location_desc == "Rural"], 
+                         merged_data$latest_value.y[merged_data$location_desc == "Rural"])
+
+blank_plot <- ggplot() +
+  theme_void() +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm")) +
+  annotate("text",
+           x = 0.5,
+           y = 0.5,
+           label = paste("Correlation All:",
+                         round(correlation_all, 2), "\n",
+                         "Correlation Urban:",
+                         round(correlation_urban, 2), "\n",
+                         "Correlation Rural:",
+                         round(correlation_rural, 2)),
+           size = 5,
+           color = "black",
+           hjust = 0.5)
+
+# Convert to a plotly plot
+gp_text <- ggplotly(blank_plot)
+print(gp_text)
+```
+
+
+### 1.5 Histogram (without Transformation)
+```{r}
+# Convert the latest_value.x variable into a categorical variable
+merged_data$latest_value.x_cat <- cut(merged_data$latest_value.x, breaks = 10)
+
+# Create a stacked bar chart
+stacked_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = location_desc)) +
+  geom_bar(position = "stack") +
+  labs(x = "Mortality Rate (deaths per 100,000 population)",
+       y = "Count",
+       title = "Stacked Bar Chart of Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_stacked_bar_chart <- ggplotly(stacked_bar_chart)
+
+# Print the plot
+print(ggplot_stacked_bar_chart)
+
+# Create a grouped bar chart
+grouped_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = location_desc)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Mortality Rate (deaths per 100,000 population)",
+       y = "Count",
+       title = "Grouped Bar Chart of Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_grouped_bar_chart <- ggplotly(grouped_bar_chart)
+
+# Print the plot
+print(ggplot_grouped_bar_chart)
+```
+
+### Normalise Data using BoxCox
+```{r}
+merged_data$latest_value.x_positive <- merged_data$latest_value.x + abs(min(merged_data$latest_value.x)) + 0.1
+
+# Apply the Box-Cox transformation
+bc_result <- boxcox(merged_data$latest_value.x_positive ~ 1, 
+                    lambda = seq(-3,3,0.1))
+
+# The optimal lambda value is the one that maximizes the log-likelihood
+optimal_lambda <- bc_result$x[which.max(bc_result$y)]
+print(paste("Optimal lambda value: ", optimal_lambda))
+
+# Transform the data using the optimal lambda value
+if (optimal_lambda == 0) {
+  merged_data$latest_value.x_bc <- log(merged_data$latest_value.x_positive)
+} else {
+  merged_data$latest_value.x_bc <- (merged_data$latest_value.x_positive^optimal_lambda - 1) / optimal_lambda
+}
+
+```
+```{r}
+plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = latest_value.y)) +
+  
+  geom_point(aes(color = location_desc, 
+                 shape = location_desc,
+                 text = paste("Country:", geoAreaName, "<br>", "Location:", location_desc)), alpha = 0.7) +
+  
+  geom_smooth(data = subset(merged_data, location_desc == "All areas"),
+              method = loess, se = FALSE, 
+              aes(color = location_desc, weight = latest_value.y),
+              show.legend = TRUE) +
+  
+  geom_smooth(data = subset(merged_data, location_desc == "Urban"),
+              method = loess,
+              se = FALSE,
+              aes(color = location_desc, weight = latest_value.y),
+              show.legend = TRUE) +
+
+  geom_smooth(data = subset(merged_data, location_desc == "Rural"),
+              method = loess,
+              se = FALSE,
+              aes(color = location_desc, weight = latest_value.y),
+              show.legend = TRUE) +
+  
+  labs(x = "Transformed Mortality Rate (deaths per 100,000 population)",
+       y = "Safely Managed Drinking Water Services (%)",
+       title = "Correlation between Transformed Mortality Rate and Water Services (Normalised)",
+       color = "Location Type",
+       shape = "Location Type") +
+  
+  theme_minimal() +
+  
+  guides(color = guide_legend(override.aes = list(shape = 16)),
+         shape = guide_legend(override.aes = list(color = "black")))
+
+
+gp_normalised <- ggplotly(plot_loess, tooltip = "text")
+print(gp_normalised)
+```
 
 ```{r}
-N <- 20
-data_top <- death_water_hygiene |>
-  group_by(parentName) |>
-  top_n(N, latest_value)
+correlation_all <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "All areas"], 
+                       merged_data$latest_value.y[merged_data$location_desc == "All areas"])
 
-# Create a ggplot2 bar chart
-p <- ggplot(data = data_top, aes(x = reorder(geoAreaName, -latest_value), y = latest_value, fill = parentName)) +
-  geom_bar(stat = "identity") +
-  labs(title = "Top 20 Countries with Highest Mortality Rate in Each Region",
-       subtitle = "Attributed to Unsafe Water, Sanitation, and Lack of Hygiene in the Latest Available Year",
-       x = "",
-       y = "Mortality Rate (deaths per 100,000 population)") +
-  theme(axis.text.x = element_blank()) +
-  facet_wrap(~ parentName, scales = "free_x")
+correlation_urban <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "Urban"], 
+                         merged_data$latest_value.y[merged_data$location_desc == "Urban"])
 
-ggplotly(p, tooltip = "x")
+correlation_rural <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "Rural"], 
+                         merged_data$latest_value.y[merged_data$location_desc == "Rural"])
+
+blank_plot <- ggplot() +
+  theme_void() +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm")) +
+  annotate("text",
+           x = 0.5,
+           y = 0.5,
+           label = paste("Correlation All:",
+                         round(correlation_all, 2), "\n",
+                         "Correlation Urban:",
+                         round(correlation_urban, 2), "\n",
+                         "Correlation Rural:",
+                         round(correlation_rural, 2)),
+           size = 5,
+           color = "black",
+           hjust = 0.5)
+
+gp_text_normalised <- ggplotly(blank_plot)
+print(gp_text_normalised)
 ```
 
-### 2. Load GeoJSON data
-
+### Combining normal and unormalised plots
 ```{r}
-data_3_9_2_map  <- read_sf("./data/indicator_3.9.2.geojson")
-points <- st_read("./data/indicator_3.9.2.gdb.zip")
-land <- st_read("./data/WB_Land.geojson")
-# Print the structure of the objects
-land
+combined_plot <- subplot(
+  gp, gp_text, 
+  gp_normalised, gp_text_normalised, 
+  nrows = 2, margin = 0.05
+)
+
+# Print the combined plot
+print(combined_plot)
 ```
 
-```{r}
-st_layers("./data/Indicator_3.9.2_SHP/Indicator_3_9_2__Series_SH_STA_WASH.shp")
-```
-
-```{r}
-
-tmap_options(check.and.fix = TRUE)
-# Plot the data
-tm_shape(data_3_9_2_area) +
-  tm_dots("latest_value", title = "Mortality Rate") +
-  tm_layout(main.title = "Mortality Rate due to Unsafe Water, Sanitation, and Lack of Hygiene")
-
-# Overlay polygon data
-tm_shape(land) +
-  tm_polygons(col = "red", alpha = 0.5)
-```
