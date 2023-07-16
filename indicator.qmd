@@ -19,10 +19,10 @@ library(RColorBrewer)
 
 ```{r}
 #mortality_rate_unintentional_poisoning
-mortality_rate_unintentional_poisoning <- read_csv("Indicator_3.9.3.csv",show_col_types = FALSE)
+mortality_rate_unintentional_poisoning <- read_csv("data/indicator_3.9.3.csv",show_col_types = FALSE)
 
 #proportion-of-population-with-basic-handwashing-facilities-on-premises-by-urban-rural-percent
-population_with_basic_handwashing_facilities<- read_csv("Indicator_6.2.1.csv",show_col_types = FALSE)
+population_with_basic_handwashing_facilities<- read_csv("data/indicator_6.2.1.csv",show_col_types = FALSE)
 
 ```
 
@@ -118,8 +118,8 @@ countries_tb
 ```
 
 ```{r}
-countries_sf <- read_sf("WB_countries_Admin0.geojson")
-land_sf <- read_sf("WB_Land.geojson")
+countries_sf <- read_sf("../WB_countries_Admin0.geojson")
+land_sf <- read_sf("data/WB_Land.geojson")
 ```
 
 ```{r}
@@ -129,14 +129,12 @@ countries_sf <-
   st_make_valid()
 land_sf <- ms_simplify(land_sf)
 npts(countries_sf)
+land_sf
 ```
 
 ```{r}
-countries_sf <-
-  countries_sf |>
-  left_join(
-    countries_tb,
-    by = join_by(WB_A3 == iso)
+countries_sf <-left_join(countries_tb,
+                         by = join_by(WB_A3 == iso)
   ) |>
   select(country, continent = 'CONTINENT', gender = 'gender', area = 'area', iso = WB_A3, mortality_rate_unintentional_poisoning_2019, pop_with_basic_handwashing_facilites_2019)
 countries_sf
