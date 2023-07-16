@@ -1,0 +1,276 @@
+---
+title: "Team Cyan 2"
+author: "Ong Zhen Yu Brandon, Goh Boon Chun, Chng Jun Jie Jeremy, Eisen Reiner Baguilat Perdido, Mageshwaran SO Muthusamy"
+format:
+  revealjs: 
+    slide-number: true
+    reference-location: document
+---
+
+# Replace title here
+
+
+## Purpose of this presentation
+
+As highlighted by ...
+
+
+## Research Questions
+
+To what extend...
+
+Specifically, what is the relationship between ...
+
+Can *xxx*, *xxx* and *xxx* serve as predictors of *xxx* in *xxx* and *xxx*?
+
+
+## Importance of this research
+
+- *Point 1*:
+
+  xxx
+
+- *Point 2*:
+
+  xxx
+
+- *Point 3*:
+
+  xxx
+
+- *Point 4*:
+
+  xxx
+
+
+## UN Sustainable Development Goals
+
+*xxx* are related to Goals 3 and 6.
+
+
+## UN Targets Addressed
+
+- *Good Health and Well-being*:
+
+  - Target 3.9: Reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+
+- *Clean Water and Sanitation*:
+  - Target 6.1: Achieve universal and equitable access to safe and affordable drinking water for all
+  - Target 6.2: Achieve adequate and equitable sanitation and hygiene targeting women
+
+
+## Selected Indicators
+
+- Target 3.9.2: Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services) 
+- Target 3.9.3: Mortality rate attributed to unintentional poisoning 
+- Target 6.1.1: Proportion of population using safely managed drinking water services 
+- Target 6.2.1: Proportion of population using (a) safely managed sanitation services and (b) a hand-washing facility with soap and water
+
+
+## Map: xxx
+
+*inserts map*
+
+Missing values for xx countries.
+
+
+## Map: xxx
+
+*inserts map*
+
+Missing values for xx countries.
+
+
+## xxx vs xxx
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+#### diagram 1
+
+text / description here
+:::
+
+:::
+
+
+## xxx vs xxx
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+#### diagram 2
+
+text / description here
+:::
+
+:::
+
+
+## Map: xxx
+
+*inserts map*
+
+Missing values for xx countries.
+
+
+## Map: xxx
+
+*inserts map*
+
+Missing values for xx countries.
+
+
+## xxx vs xxx
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+#### diagram 1
+
+text / description here
+:::
+
+:::
+
+
+## xxx vs xxx
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+#### diagram 2
+
+text / description here
+:::
+
+:::
+
+
+## Table of xxx Representation
+
+*inserts map*
+
+Missing values for xx countries.
+
+
+## $\textit{k}$-Means Clustering
+
+Considering the four selected Sustainable Development Goals, what is an appropriate number, $\textit{k}$, of clusters for countries?
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+The 'xxx' suggests $k=3$ or $k=4$.
+
+We choose $k=3$, but this decision is admittedly subjective.
+:::
+
+:::
+
+
+## Pairs Plot Highlighting Clusters
+
+::: columns
+
+::: {.column width="35%"}
+*diagram here*
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+
+::: {style="color: red;"}
+1. High xxx and high xxx representation. 
+:::
+
+::: {style="color: blue;"}
+2. Low xxx and high xxx representation.
+:::
+
+::: {style="color: green;"}
+3. Low xxx representation.
+:::
+
+:::
+
+:::
+
+
+## Decision Tree
+
+Can the cluster assignment be predicted based on the country’s income group, population size and region according to the 7-class World Bank categorisation?
+
+*diagram here*
+
+
+## Evaluation of Decision Tree
+
+::: {style="color: red;"}
+CHANGE THIS
+:::
+
+The decision tree does not assign any country to cluster 2 (low education and high political representation).
+
+Ten-fold cross validation indicates that the decision tree has a low accuracy of 0.65.
+
+The relative importance of the predictors for classification are as follows:
+
+- Income group: 100
+- Region: 60.55
+- Population size: 9.07
+
+
+## Summary of Quantitative Results
+
+- Strong positive correlations exist between indicators for the same goal.
+- Moderate but statistically significant correlations are observed between indicators for different goals.
+- The country’s income group and region may moderately influence female participation in education and politics.
+- Population size does not have a significant impact.
+- Many missing. Only 72 countries have data for all four indicators.
+
+
+## Policy Implications
+
+- Education and gender equality indicators are interconnected.
+- Promote gender equality in both national and local political institutions because both levels are strongly correlated.
+- Tailor interventions to address specific challenges in different income groups and regions.
+- Support countries in improving data collection for evidence-based policymaking.
+
