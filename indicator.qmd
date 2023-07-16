@@ -1,0 +1,454 @@
+---
+title: "indicator_2"
+format: html
+---
+
+```{r}
+#| warning: false
+#| message: false
+library(tidyverse)
+library(readxl)
+library(rmapshaper)
+library(sf)
+library(mapview)
+library(tmap)
+library(lintr)
+library(leaflet)
+library(RColorBrewer)
+```
+
+```{r}
+#mortality_rate_unintentional_poisoning
+mortality_rate_unintentional_poisoning <- read_csv("Indicator_3.9.3.csv",show_col_types = FALSE)
+
+#proportion-of-population-with-basic-handwashing-facilities-on-premises-by-urban-rural-percent
+population_with_basic_handwashing_facilities<- read_csv("Indicator_6.2.1.csv",show_col_types = FALSE)
+
+```
+
+```{r}
+#| label: select specific columns for mortality rate
+mortality_rate_unintentional_poisoning <- select(
+  mortality_rate_unintentional_poisoning,
+  code = 'geoAreaCode',
+  country = 'geoAreaName',
+  region = 'parentName',
+  iso = 'ISO3',
+  gender = 'sex_desc',
+  mortality_rate_unintentional_poisoning_2019 = 'value_2019'
+)
+
+# drop rows if contains at least one NA value
+mortality_rate_unintentional_poisoning <- na.omit(mortality_rate_unintentional_poisoning)
+
+#check for empty row
+any(is.na(mortality_rate_unintentional_poisoning))
+
+mortality_rate_unintentional_poisoning
+
+```
+
+```{r}
+#| label: mortality rate histograms
+#| fig-width: 4.0
+#| fig-height: 2.5
+#| out-width: 56%
+
+# Create the histogram
+mortality_histo <- ggplot(mortality_rate_unintentional_poisoning, aes(x=mortality_rate_unintentional_poisoning_2019)) +
+  geom_histogram(binwidth=0.1, fill='blue', color='black') +
+  labs(title="Mortality rate unintentional poisoning for Year 2019", x="Mortality Rate (per 100,000)", y="Number of Country")
+
+mortality_histo
+```
+
+```{r}
+#| label: select specific columns for population with basic handwashing facilities
+population_with_basic_handwashing_facilities <- select(
+  population_with_basic_handwashing_facilities,
+  code = 'geoAreaCode',
+  country = 'geoAreaName',
+  region = 'parentName',
+  iso = 'ISO3',
+  area = 'location_desc',
+  pop_with_basic_handwashing_facilites_2019 = 'value_2019'
+)
+
+# drop rows if contains at least one NA value
+population_with_basic_handwashing_facilities <- na.omit(population_with_basic_handwashing_facilities)
+
+#check for empty row
+any(is.na(mortality_rate_unintentional_poisoning))
+
+population_with_basic_handwashing_facilities
+```
+
+```{r}
+#| label: pop_with_handwashing_facilities histograms
+#| fig-width: 4.0
+#| fig-height: 2.5
+#| out-width: 56%
+
+# Create the histogram
+pop_with_handwashing_facilities_histo <- ggplot(population_with_basic_handwashing_facilities, aes(x=pop_with_basic_handwashing_facilites_2019)) +
+  geom_histogram(binwidth=5, fill='blue', color='black') +
+  labs(title="Population with basic handwashing facilities for Year 2019", x="Population (%)", y="Number of Country")
+
+pop_with_handwashing_facilities_histo
+```
+
+```{r}
+countries_tb <- left_join(
+  mortality_rate_unintentional_poisoning,
+  population_with_basic_handwashing_facilities,
+  by = join_by(country, iso)
+) |>
+  mutate(
+    iso = case_match(
+      iso,
+      "COD" ~ "ZAR",
+      "ROU" ~ "ROM",
+      "TLS" ~ "TMP",
+      "XKX" ~ "KSV",
+      .default = iso
+    )
+  )
+
+countries_tb
+```
+
+```{r}
+countries_sf <- read_sf("WB_countries_Admin0.geojson")
+land_sf <- read_sf("WB_Land.geojson")
+```
+
+```{r}
+countries_sf <-
+  countries_sf |>
+  ms_simplify() |> # Default argument `keep = 0.05`
+  st_make_valid()
+land_sf <- ms_simplify(land_sf)
+npts(countries_sf)
+```
+
+```{r}
+countries_sf <-
+  countries_sf |>
+  left_join(
+    countries_tb,
+    by = join_by(WB_A3 == iso)
+  ) |>
+  select(country, continent = 'CONTINENT', gender = 'gender', area = 'area', iso = WB_A3, mortality_rate_unintentional_poisoning_2019, pop_with_basic_handwashing_facilites_2019)
+countries_sf
+```
+
+```{r}
+polygon <- st_polygon(x = list(rbind(
+  c(-180.0001, 90),
+  c(-179.9999, 90),
+  c(-179.9999, -90),
+  c(-180.0001, -90),
+  c(-180.0001, 90)
+))) |>
+  st_sfc() |>
+  st_set_crs(4326) # Equirectangular projection
+countries_sf <- mutate(
+  countries_sf,
+  geometry = st_difference(geometry, polygon)
+) |>
+  st_make_valid()
+tm_shape(countries_sf) + tm_polygons()
+```
+
+```{r}
+countries_sf$area <- replace_na(countries_sf$area, "missing")
+choropleth_pop <-
+  tm_shape(land_sf, projection = "ESRI:54012") +
+  tm_polygons(col = "grey") +
+  tm_shape(countries_sf) +
+  tm_polygons(
+    col = "pop_with_basic_handwashing_facilites_2019",
+    border.col = "grey30",
+    palette = "Greens",
+    breaks = c(-Inf, 20, 40, 60, 80, 100, Inf),
+    colorNA = "grey",
+    title = "Population (%)",
+    lwd = 0.5
+  ) +
+  tm_text("iso", size = "AREA", auto.placement = TRUE) +  # Use the new column to set the size
+  tm_credits(
+    c("", "Source: unstats-undesa.opendata.arcgis.com"),
+    position = c("right", "bottom")
+  ) +
+  tm_layout(
+    bg.color = "lightblue",
+    frame = FALSE,
+    inner.margins = c(0.00, 0.2, 0.2, 0.1),
+    earth.boundary = TRUE,
+    space.color = "white",
+    main.title.size = 0.8,
+    title.size = 0.5,
+    main.title = "Population with basic handwashing facilities by Country for 2019"
+  )
+
+choropleth_pop
+
+```
+
+```{r}
+countries_sf$gender <- replace_na(countries_sf$gender, "missing")
+choropleth_mor<-
+  tm_shape(land_sf, projection = "ESRI:54012") +
+  tm_polygons(col = "grey") +
+  tm_shape(countries_sf) +
+  tm_polygons(
+    col = "mortality_rate_unintentional_poisoning_2019",
+    border.col = "grey30",
+    palette = "Oranges",
+    breaks = c(-Inf, 0.2, 0.4, 0.6, 0.8, 1, Inf),
+    colorNA = "grey",
+    title = "Mortality Rate \nper 100,000",
+    lwd = 0.5
+  ) + 
+  tm_text("iso", size = "AREA") +
+  tm_credits(
+    c("", "Source: unstats-undesa.opendata.arcgis.com"),
+    position = c("right", "bottom")
+  ) +
+  tm_layout(
+    bg.color = "lightblue",
+    frame = FALSE,
+    inner.margins = c(0.00, 0.2, 0.2, 0.1),
+    earth.boundary = TRUE,
+    space.color = "white",
+    main.title.size = 0.8,
+    title.size = 0.5,
+    main.title = "Mortality Rate Unintentional Poisoning by Country for 2019"
+  )
+
+choropleth_mor
+```
+
+```{r}
+tmap_mode("view")
+choropleth_pop
+```
+
+```{r}
+choropleth_mor
+```
+
+
+```{r}
+countries_sf_all_areas <- countries_sf[countries_sf$area == "All areas",]
+countries_sf_urban <- countries_sf[countries_sf$area == "Urban",]
+countries_sf_rural <- countries_sf[countries_sf$area == "Rural",]
+
+countries_sf_all_areas
+countries_sf_urban
+countries_sf_rural
+```
+
+```{r}
+# Get a color palette with three colors
+colors <- brewer.pal(3, "Set1")
+
+# Assign colors to the categories
+colorpal_area <- colorFactor(colors, 
+                               levels = c("All areas", "Urban", "Rural"))
+```
+
+
+```{r}
+leaflet(countries_sf_all_areas) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_area(area),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Population with basic handwashing facilities (%): ", pop_with_basic_handwashing_facilites_2019,
+                             "<br>Area: ", area)) %>%
+  addLegend(pal = colorpal_area, 
+            values = ~area, 
+            title = "Area", 
+            position = "bottomright")
+
+```
+
+```{r}
+leaflet(countries_sf_urban) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_area(area),  # use colorpal_area here
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  # This adds labels that appear when you hover over a country
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Population with basic handwashing facilities (%): ", pop_with_basic_handwashing_facilites_2019,
+                             "<br>Area: ", area)) %>%
+  addLegend(pal = colorpal_area, 
+            values = ~area, 
+            title = "Area", 
+            position = "bottomright")
+
+```
+
+
+```{r}
+leaflet(countries_sf_rural) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_area(area),  # use colorpal_area here
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  # This adds labels that appear when you hover over a country
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Population with basic handwashing facilities (%): ", pop_with_basic_handwashing_facilites_2019,
+                             "<br>Area: ", area)) %>%
+  addLegend(pal = colorpal_area, 
+            values = ~area, 
+            title = "Area", 
+            position = "bottomright")
+
+```
+
+
+
+```{r}
+countries_sf_male <- countries_sf[countries_sf$gender == "Male",]
+countries_sf_female <- countries_sf[countries_sf$gender == "Female",]
+countries_sf_both <- countries_sf[countries_sf$gender == "Both sexes",]
+
+countries_sf_male
+countries_sf_female
+countries_sf_both
+```
+
+```{r}
+# Get a color palette with three colors
+colors <- brewer.pal(3, "Set1")
+
+# Assign colors to the categories
+colorpal_gender <- colorFactor(colors, 
+                               levels = c("Female", "Male", "Both sexes"))
+```
+
+
+```{r}
+# Replace NAs in 'gender' column
+countries_sf_male$gender <- replace_na(countries_sf_male$gender, "missing")
+
+leaflet(countries_sf_male) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_gender(gender),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Mortality Rate Unintentional Poisoning per 100,000: ", mortality_rate_unintentional_poisoning_2019,
+                             "<br>Gender: ", gender)) %>%
+  addLegend(pal = colorpal_gender, 
+            values = ~gender, 
+            title = "Gender", 
+            position = "bottomright")
+
+```
+
+```{r}
+# Replace NAs in 'gender' column
+countries_sf_female$gender <- replace_na(countries_sf_female$gender, "missing")
+
+leaflet(countries_sf_female) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_gender(gender),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Mortality Rate Unintentional Poisoning per 100,000: ", mortality_rate_unintentional_poisoning_2019,
+                             "<br>Gender: ", gender)) %>%
+  addLegend(pal = colorpal_gender, 
+            values = ~gender, 
+            title = "Gender", 
+            position = "bottomright")
+```
+
+```{r}
+# Replace NAs in 'gender' column
+countries_sf_both$gender <- replace_na(countries_sf_both$gender, "missing")
+
+leaflet(countries_sf_both) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorpal_gender(gender),  # Assign color based on gender
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~iso,  
+              popup = ~paste("Country Code: ", iso,
+                             "<br>Country: ", country,
+                             "<br>Mortality Rate Unintentional Poisoning per 100,000: ", mortality_rate_unintentional_poisoning_2019,
+                             "<br>Gender: ", gender)) %>%
+  addLegend(pal = colorpal_gender, 
+            values = ~gender, 
+            title = "Gender", 
+            position = "bottomright")
+
+```
+
