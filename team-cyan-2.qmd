@@ -124,28 +124,21 @@ gp_text
 ```
 
 
-### 1.5 Histogram (without Transformation)
+### 1.5 barchart and stacked barchart (without Transformation)
 ```{r}
-# Convert the latest_value.x variable into a categorical variable
-merged_data$latest_value.x_cat <- cut(merged_data$latest_value.x, breaks = 10)
-
-# Create a stacked bar chart
-stacked_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = location_desc)) +
-  geom_bar(position = "stack") +
+stacked_bar_chart <- ggplot(merged_data, aes(x = latest_value.x, fill = location_desc)) +
+  geom_histogram(position = "stack", bins = 20) +
   labs(x = "Mortality Rate (deaths per 100,000 population)",
        y = "Count",
        title = "Stacked Bar Chart of Mortality Rates") +
   theme_minimal()
 
-# Convert to a plotly plot
+#change to plotly
 ggplot_stacked_bar_chart <- ggplotly(stacked_bar_chart)
+ggplot_stacked_bar_chart
 
-# Print the plot
-print(ggplot_stacked_bar_chart)
-
-# Create a grouped bar chart
-grouped_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = location_desc)) +
-  geom_bar(position = "dodge") +
+grouped_bar_chart <- ggplot(merged_data, aes(x = latest_value.x, fill = location_desc)) +
+  geom_histogram(position = "dodge", bins = 20) +
   labs(x = "Mortality Rate (deaths per 100,000 population)",
        y = "Count",
        title = "Grouped Bar Chart of Mortality Rates") +
@@ -153,10 +146,29 @@ grouped_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = loca
 
 # Convert to a plotly plot
 ggplot_grouped_bar_chart <- ggplotly(grouped_bar_chart)
-
-# Print the plot
 ggplot_grouped_bar_chart
 ```
+
+### Histogram
+```{r}
+# Filter data for the histogram
+merged_data_all<- subset(merged_data, location_desc == "All areas")  # change to rural or urban if you want
+
+histogram <- ggplot(merged_data_all, aes(x = latest_value.x, 
+                             text = paste("Country:", geoAreaName, 
+                                          "<br>Mortality Rate:", latest_value.x))) +
+  geom_histogram(bins = 50, fill = 'grey', color = 'black') +
+  labs(x = 'Mortality Rate (deaths per 100,000 population)',
+       y = 'Count',
+       title = 'Histogram of Mortality Rates for "All" locations') +
+  theme_minimal()
+
+# Convert ggplot histogram to a plotly plot
+plotly_histogram <- ggplotly(histogram, tooltip = "text")
+plotly_histogram
+```
+
+
 
 ### Normalise Data using BoxCox
 ```{r}
@@ -182,6 +194,63 @@ min_value <- min(merged_data$latest_value.x_bc)
 merged_data$latest_value.x_bc <- merged_data$latest_value.x_bc + abs(min_value) + 0.1
 
 ```
+
+### Histogram Normalised
+```{r}
+# Round the transformed mortality rates to the nearest whole number
+merged_data$latest_value.x_bc_rounded <- round(merged_data$latest_value.x_bc)
+
+# Convert the latest_value.x_bc_rounded variable into a categorical variable
+merged_data$latest_value.x_bc_cat <- cut(merged_data$latest_value.x_bc_rounded, breaks = 50)
+
+# Create a stacked bar chart
+stacked_bar_chart_bc <- ggplot(merged_data, aes(x = latest_value.x_bc_rounded, fill = location_desc)) +
+  geom_bar(position = "stack", bins =20) +
+  labs(x = "Transformed Mortality Rate",
+       y = "Count",
+       title = "Stacked Bar Chart of Transformed Mortality Rates") +
+  theme_minimal()
+
+ggplot_stacked_bar_chart_bc <- ggplotly(stacked_bar_chart_bc)
+ggplot_stacked_bar_chart_bc
+
+# Create a grouped bar chart
+grouped_bar_chart_bc <- ggplot(merged_data, aes(x = latest_value.x_bc_rounded, fill = location_desc)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Transformed Mortality Rate",
+       y = "Count",
+       title = "Grouped Bar Chart of Transformed Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_grouped_bar_chart_bc <- ggplotly(grouped_bar_chart_bc)
+ggplot_grouped_bar_chart_bc
+```
+```{r}
+# Filter data for the histogram
+merged_data_all<- subset(merged_data, location_desc == "All areas") # change to rural or urban if you want
+
+histogram_normalised <- ggplot(merged_data_all, aes(x = latest_value.x_bc, 
+                             text = paste("Country:", geoAreaName, 
+                                          "<br>Mortality Rate:", latest_value.x))) +
+  geom_histogram(bins = 50, fill = 'grey', color = 'black') +
+  labs(x = 'Mortality Rate (deaths per 100,000 population)',
+       y = 'Count',
+       title = 'Histogram of Mortality Rates for "All" locations') +
+  theme_minimal()
+
+# Convert ggplot histogram to a plotly plot
+plotly_histogram_normalised <- ggplotly(histogram_normalised, tooltip = "text")
+plotly_histogram_normalised
+```
+
+
+
+
+
+
+### Scatter plot Normalised
+
 ```{r}
 plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = value_2019)) +
   

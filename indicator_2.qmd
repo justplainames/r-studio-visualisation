@@ -38,6 +38,7 @@ mortality_rate_unsafe_water <- select(
 
 mortality_rate_unsafe_water
 ```
+
 ```{r}
 proportion_of_safe_water <- select(
   proportion_of_safe_water,
@@ -56,6 +57,7 @@ proportion_of_safe_water <- select(
 
 proportion_of_safe_water
 ```
+
 ```{r}
 countries_sf <- read_sf("../WB_countries_Admin0.geojson")
 countries_boundary <- st_boundary(countries_sf)
@@ -93,11 +95,13 @@ land_wrapped <- land_wrapped |>
 countries_wrapped <- countries_wrapped |>
   st_difference(polygon)
 ```
+
 ```{r}
 countries_wrapped
 ```
 
 ## Joining of Data
+
 ```{r}
 # Washing data combined
 countries_sf_wash <- left_join(select(countries_wrapped,
@@ -115,6 +119,7 @@ countries_sf_mortality <- left_join(select(countries_wrapped,
                           )
 countries_sf_wash
 ```
+
 ```{r}
 countries_sf_wash$location_desc <- replace_na(countries_sf_wash$location_desc, "missing")
 tmap_mode("view")
@@ -149,6 +154,7 @@ wash_pop <-
 
 wash_pop 
 ```
+
 ```{r}
 wash_pop
 ```
@@ -188,6 +194,7 @@ mortality_pop <-
 mortality_pop <- wash_pop + tm_facets(by = "location_desc")
 
 ```
+
 ```{r}
 library(shiny)
 library(tmap)
@@ -242,4 +249,3 @@ server <- function(input, output) {
 shinyApp(ui, server)
 
 ```
-

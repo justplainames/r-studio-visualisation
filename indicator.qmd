@@ -27,15 +27,26 @@ population_with_basic_handwashing_facilities<- read_csv("data/indicator_6.2.1.cs
 ```
 
 ```{r}
-#| label: select specific columns for mortality rate
-mortality_rate_unintentional_poisoning <- select(
+# select specific columns for mortality rate
+mortality_rate_unintentional_poisoning <- dplyr::select(
   mortality_rate_unintentional_poisoning,
-  code = 'geoAreaCode',
-  country = 'geoAreaName',
-  region = 'parentName',
-  iso = 'ISO3',
-  gender = 'sex_desc',
-  mortality_rate_unintentional_poisoning_2019 = 'value_2019'
+  geoAreaCode,
+  geoAreaName,
+  parentName,
+  ISO3,
+  sex_desc,
+  value_2019
+)
+
+# rename the selected columns
+mortality_rate_unintentional_poisoning <- dplyr::rename(
+  mortality_rate_unintentional_poisoning,
+  code = geoAreaCode,
+  country = geoAreaName,
+  region = parentName,
+  iso = ISO3,
+  gender = sex_desc,
+  mortality_rate_unintentional_poisoning_2019 = value_2019
 )
 
 # drop rows if contains at least one NA value
@@ -44,7 +55,8 @@ mortality_rate_unintentional_poisoning <- na.omit(mortality_rate_unintentional_p
 #check for empty row
 any(is.na(mortality_rate_unintentional_poisoning))
 
-mortality_rate_unintentional_poisoning
+# print the dataframe
+print(mortality_rate_unintentional_poisoning)
 
 ```
 
