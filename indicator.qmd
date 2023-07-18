@@ -119,8 +119,8 @@ countries_tb
 ```
 
 ```{r}
-countries_sf <- read_sf("WB_countries_Admin0.geojson")
-land_sf <- read_sf("WB_Land.geojson")
+countries_sf <- read_sf("./data/WB_countries_Admin0.geojson")
+land_sf <- read_sf("./data/WB_Land.geojson")
 ```
 
 ```{r}
