@@ -15,38 +15,28 @@ library(tmap)
 library(lintr)
 library(leaflet)
 library(RColorBrewer)
+library(plotly)
 ```
 
 ```{r}
 #mortality_rate_unintentional_poisoning
-mortality_rate_unintentional_poisoning <- read_csv("data/indicator_3.9.3.csv",show_col_types = FALSE)
+mortality_rate_unintentional_poisoning <- read_csv("./data/indicator_3.9.3.csv",show_col_types = FALSE)
 
 #proportion-of-population-with-basic-handwashing-facilities-on-premises-by-urban-rural-percent
-population_with_basic_handwashing_facilities<- read_csv("data/indicator_6.2.1.csv",show_col_types = FALSE)
+population_with_basic_handwashing_facilities<- read_csv("./data/indicator_6.2.1.csv",show_col_types = FALSE)
 
 ```
 
 ```{r}
-# select specific columns for mortality rate
-mortality_rate_unintentional_poisoning <- dplyr::select(
+#| label: select specific columns for mortality rate
+mortality_rate_unintentional_poisoning <- select(
   mortality_rate_unintentional_poisoning,
-  geoAreaCode,
-  geoAreaName,
-  parentName,
-  ISO3,
-  sex_desc,
-  value_2019
-)
-
-# rename the selected columns
-mortality_rate_unintentional_poisoning <- dplyr::rename(
-  mortality_rate_unintentional_poisoning,
-  code = geoAreaCode,
-  country = geoAreaName,
-  region = parentName,
-  iso = ISO3,
-  gender = sex_desc,
-  mortality_rate_unintentional_poisoning_2019 = value_2019
+  code = 'geoAreaCode',
+  country = 'geoAreaName',
+  region = 'parentName',
+  iso = 'ISO3',
+  gender = 'sex_desc',
+  mortality_rate_unintentional_poisoning_2019 = 'value_2019'
 )
 
 # drop rows if contains at least one NA value
@@ -55,8 +45,7 @@ mortality_rate_unintentional_poisoning <- na.omit(mortality_rate_unintentional_p
 #check for empty row
 any(is.na(mortality_rate_unintentional_poisoning))
 
-# print the dataframe
-print(mortality_rate_unintentional_poisoning)
+mortality_rate_unintentional_poisoning
 
 ```
 
@@ -130,8 +119,8 @@ countries_tb
 ```
 
 ```{r}
-countries_sf <- read_sf("../WB_countries_Admin0.geojson")
-land_sf <- read_sf("data/WB_Land.geojson")
+countries_sf <- read_sf("WB_countries_Admin0.geojson")
+land_sf <- read_sf("WB_Land.geojson")
 ```
 
 ```{r}
@@ -141,12 +130,14 @@ countries_sf <-
   st_make_valid()
 land_sf <- ms_simplify(land_sf)
 npts(countries_sf)
-land_sf
 ```
 
 ```{r}
-countries_sf <-left_join(countries_tb,
-                         by = join_by(WB_A3 == iso)
+countries_sf <-
+  countries_sf |>
+  left_join(
+    countries_tb,
+    by = join_by(WB_A3 == iso)
   ) |>
   select(country, continent = 'CONTINENT', gender = 'gender', area = 'area', iso = WB_A3, mortality_rate_unintentional_poisoning_2019, pop_with_basic_handwashing_facilites_2019)
 countries_sf
@@ -185,7 +176,7 @@ choropleth_pop <-
     title = "Population (%)",
     lwd = 0.5
   ) +
-  tm_text("iso", size = "AREA", auto.placement = TRUE) +  # Use the new column to set the size
+  tm_text("iso", size = "AREA") +  # Use the new column to set the size
   tm_credits(
     c("", "Source: unstats-undesa.opendata.arcgis.com"),
     position = c("right", "bottom")
@@ -238,16 +229,6 @@ choropleth_mor<-
 
 choropleth_mor
 ```
-
-```{r}
-tmap_mode("view")
-choropleth_pop
-```
-
-```{r}
-choropleth_mor
-```
-
 
 ```{r}
 countries_sf_all_areas <- countries_sf[countries_sf$area == "All areas",]
@@ -459,6 +440,270 @@ leaflet(countries_sf_both) %>%
             values = ~gender, 
             title = "Gender", 
             position = "bottomright")
+
+```
+
+```{r}
+countries_sf <- countries_sf[!is.na(countries_sf$mortality_rate_unintentional_poisoning_2019) & !is.na(countries_sf$pop_with_basic_handwashing_facilites_2019), ]
+
+countries_sf <- countries_sf %>%
+  filter(gender == 'Both sexes')
+
+countries_sf
+```
+
+```{r}
+# Plot the data
+plot_loess <- ggplot(countries_sf, aes(x = mortality_rate_unintentional_poisoning_2019, y = pop_with_basic_handwashing_facilites_2019)) +
+  
+  geom_point(aes(color = area, 
+                 shape = area,
+                 text = paste("Country:", country, "<br>", "Location:", area)), alpha = 0.7) +
+  
+  geom_smooth(data = subset(countries_sf, area == "All areas"),
+              method = loess, se = FALSE,
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+  
+  geom_smooth(data = subset(countries_sf, area == "Urban"),
+              method = loess, se = FALSE,
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+
+  geom_smooth(data = subset(countries_sf, area == "Rural"),
+              method = loess, se = FALSE,
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+  
+  labs(x = "Mortality Rate (deaths per 100,000 population) for 2019 ",
+       y = "Population with Basic Handwashing Facilities for 2019 (%)",
+       title = "Correlation between Mortality Rate and Basic Handwashing Facilities",
+       color = "Location Type",
+       shape = "Location Type") +
+  
+  theme_minimal() +
+  
+  guides(color = guide_legend(override.aes = list(shape = 16)),
+         shape = guide_legend(override.aes = list(color = "black")))
+
+
+# Convert to a plotly plot
+gp <- ggplotly(plot_loess, tooltip = "text")
+
+gp
+```
+
+### Correlation Empty Plot
+```{r}
+correlation_all <- cor(countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "All areas"], 
+                       countries_sf$mortality_rate_unintentional_poisoning_2019[countries_sf$area == "All areas"])
+
+correlation_urban <- cor(countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "Urban"], 
+                         countries_sf$mortality_rate_unintentional_poisoning_2019[countries_sf$area == "Urban"])
+
+correlation_rural <- cor(countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "Rural"], 
+                         countries_sf$mortality_rate_unintentional_poisoning_2019[countries_sf$area == "Rural"])
+
+blank_plot <- ggplot() +
+  theme_void() +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm")) +
+  annotate("text",
+           x = 0.5,
+           y = 0.5,
+           label = paste("Correlation All:",
+                         round(correlation_all, 2), "\n",
+                         "Correlation Urban:",
+                         round(correlation_urban, 2), "\n",
+                         "Correlation Rural:",
+                         round(correlation_rural, 2)),
+           size = 5,
+           color = "black",
+           hjust = 0.5)
+
+# Convert to a plotly plot
+gp_text <- ggplotly(blank_plot)
+
+gp_text
+```
+
+
+### 1.5 Histogram (without Transformation)
+
+```{r}
+#| warning: false
+stacked_bar_chart <- ggplot(countries_sf, aes(x = mortality_rate_unintentional_poisoning_2019, fill = area)) +
+  geom_bar(position = "stack") +
+  labs(x = "Mortality Rate (deaths per 100,000 population)",
+       y = "Count",
+       title = "Stacked Bar Chart of Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_stacked_bar_chart <- ggplotly(stacked_bar_chart)
+
+# Create a grouped bar chart
+grouped_bar_chart <- ggplot(countries_sf, aes(x = mortality_rate_unintentional_poisoning_2019, fill = area)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Mortality Rate (deaths per 100,000 population)",
+       y = "Count",
+       title = "Grouped Bar Chart of Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_grouped_bar_chart <- ggplotly(grouped_bar_chart)
+
+```
+
+
+```{r}
+ggplot_stacked_bar_chart <- ggplotly(stacked_bar_chart, width = 1000, height = 600, autosize = TRUE)
+ggplot_grouped_bar_chart <- ggplotly(grouped_bar_chart, width = 1000, height = 600, autosize = TRUE)
+
+ggplot_stacked_bar_chart
+ggplot_grouped_bar_chart
+```
+
+
+### Normalise Data
+```{r}
+#Ensure you have the MASS library installed
+
+countries_sf$mortality_rate_unintentional_poisoning_2019.positive <- countries_sf$mortality_rate_unintentional_poisoning_2019 + abs(min(countries_sf$mortality_rate_unintentional_poisoning_2019)) + 0.1
+# Apply the Box-Cox transformation
+bc_result <- MASS::boxcox(countries_sf$mortality_rate_unintentional_poisoning_2019.positive ~ 1, 
+                    lambda = seq(-3,3,0.1))
+
+# The optimal lambda value is the one that maximizes the log-likelihood
+optimal_lambda <- bc_result$x[which.max(bc_result$y)]
+
+# Transform the data using the optimal lambda value
+if (optimal_lambda == 0) {
+  countries_sf$latest_value.x_bc <- log(countries_sf$mortality_rate_unintentional_poisoning_2019.positive)
+} else {
+  countries_sf$latest_value.x_bc <- (countries_sf$mortality_rate_unintentional_poisoning_2019.positive^optimal_lambda - 1) / optimal_lambda
+}
+
+# Shift the transformed variable to be non-negative
+min_value <- min(countries_sf$latest_value.x_bc)
+countries_sf$latest_value.x_bc <- countries_sf$latest_value.x_bc + abs(min_value) + 0.1
+
+```
+
+### Histogram Normalised
+```{r}
+# Round the transformed mortality rates to the nearest whole number
+countries_sf$latest_value.x_bc_rounded <- round(countries_sf$latest_value.x_bc)
+
+# Convert the latest_value.x_bc_rounded variable into a categorical variable
+countries_sf$latest_value.x_bc_cat <- cut(countries_sf$latest_value.x_bc_rounded, breaks = 50)
+
+# Create a stacked bar chart
+stacked_bar_chart_bc <- ggplot(countries_sf, aes(x = latest_value.x_bc_rounded, fill = area)) +
+  geom_bar(position = "stack", bins =20) +
+  labs(x = "Transformed Mortality Rate",
+       y = "Count",
+       title = "Stacked Bar Chart of Transformed Mortality Rates") +
+  theme_minimal()
+
+ggplot_stacked_bar_chart_bc <- ggplotly(stacked_bar_chart_bc)
+ggplot_stacked_bar_chart_bc
+
+# Create a grouped bar chart
+grouped_bar_chart_bc <- ggplot(countries_sf, aes(x = latest_value.x_bc_rounded, fill = area)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Transformed Mortality Rate",
+       y = "Count",
+       title = "Grouped Bar Chart of Transformed Mortality Rates") +
+  theme_minimal()
+
+# Convert to a plotly plot
+ggplot_grouped_bar_chart_bc <- ggplotly(grouped_bar_chart_bc)
+ggplot_grouped_bar_chart_bc
+```
+
+### Scatter plot Normalised
+
+```{r}
+plot_loess <- ggplot(countries_sf, aes(x = latest_value.x_bc, y = pop_with_basic_handwashing_facilites_2019)) +
+  
+  geom_point(aes(color = area, 
+                 shape = area,
+                 text = paste("Country:", country, "<br>", "Location:", area)), alpha = 0.7) +
+  
+  geom_smooth(data = subset(countries_sf, area == "All areas"),
+              method = loess, se = FALSE, 
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+  
+  geom_smooth(data = subset(countries_sf, area == "Urban"),
+              method = loess,
+              se = FALSE,
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+
+  geom_smooth(data = subset(countries_sf, area == "Rural"),
+              method = loess,
+              se = FALSE,
+              aes(color = area, weight = pop_with_basic_handwashing_facilites_2019),
+              show.legend = TRUE) +
+  
+  labs(x = "Transformed Mortality Rate (deaths per 100,000 population) for 2019",
+       y = "Population with Basic Handwashing Facilities for 2019 (%)",
+       title = "Correlation between Mortality Rate and Basic Handwashing Facilities (Normalised)",
+       color = "Location Type",
+       shape = "Location Type") +
+  
+  theme_minimal() +
+  
+  guides(color = guide_legend(override.aes = list(shape = 16)),
+         shape = guide_legend(override.aes = list(color = "black")))
+
+
+gp_normalised <- ggplotly(plot_loess, tooltip = "text")
+gp_normalised
+```
+
+```{r}
+correlation_all <- cor(countries_sf$latest_value.x_bc[countries_sf$area == "All areas"], 
+                       countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "All areas"])
+
+correlation_urban <- cor(countries_sf$latest_value.x_bc[countries_sf$area == "Urban"], 
+                         countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "Urban"])
+
+correlation_rural <- cor(countries_sf$latest_value.x_bc[countries_sf$area == "Rural"], 
+                         countries_sf$pop_with_basic_handwashing_facilites_2019[countries_sf$area == "Rural"])
+
+blank_plot <- ggplot() +
+  theme_void() +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm")) +
+  annotate("text",
+           x = 0.5,
+           y = 0.5,
+           label = paste("Correlation All:",
+                         round(correlation_all, 2), "\n",
+                         "Correlation Urban:",
+                         round(correlation_urban, 2), "\n",
+                         "Correlation Rural:",
+                         round(correlation_rural, 2)),
+           size = 5,
+           color = "black",
+           hjust = 0.5)
+
+gp_text_normalised <- ggplotly(blank_plot)
+gp_text_normalised
+
+```
+
+### Combining normal and unormalised plots
+```{r}
+combined_plot <- subplot(
+  gp, gp_text, 
+  gp_normalised, gp_text_normalised, 
+  nrows = 2, margin = 0.05
+)
+
+# Print the combined plot
+combined_plot
 
 ```
 
