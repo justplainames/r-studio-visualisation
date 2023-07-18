@@ -477,7 +477,7 @@ plot_loess <- ggplot(countries_sf, aes(x = mortality_rate_unintentional_poisonin
   
   labs(x = "Mortality Rate (deaths per 100,000 population) for 2019 ",
        y = "Population with Basic Handwashing Facilities for 2019 (%)",
-       title = "Correlation between Mortality Rate and Basic Handwashing Facilities",
+       title = "Correlation between Mortality Rate and Basic Handwashing Facilities \n for Both Gender",
        color = "Location Type",
        shape = "Location Type") +
   
@@ -649,7 +649,7 @@ plot_loess <- ggplot(countries_sf, aes(x = latest_value.x_bc, y = pop_with_basic
   
   labs(x = "Transformed Mortality Rate (deaths per 100,000 population) for 2019",
        y = "Population with Basic Handwashing Facilities for 2019 (%)",
-       title = "Correlation between Mortality Rate and Basic Handwashing Facilities (Normalised)",
+       title = "Correlation between Mortality Rate and Basic Handwashing Facilities (Normalised) for Both Gender",
        color = "Location Type",
        shape = "Location Type") +
   
