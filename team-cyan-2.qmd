@@ -39,9 +39,9 @@ water_services_data <- read_csv("./data/indicator_6.1.1.csv")
 
 ```{r}
 merged_data <- merge(death_water_hygiene, water_services_data, by=c('geoAreaCode', 'geoAreaName'))
-
+merged_data <- merged_data[!is.na(merged_data$value_2019), ] #remove NA values for 2019
 # Display the first few rows of the merged dataframe
-head(merged_data)
+merged_data
 ```
 
 
@@ -49,7 +49,7 @@ head(merged_data)
 
 ```{r}
 # Plot the data
-plot_loess <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
+plot_loess <- ggplot(merged_data, aes(x = latest_value.x, y = value_2019)) +
   
   geom_point(aes(color = location_desc, 
                  shape = location_desc,
@@ -57,24 +57,24 @@ plot_loess <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
   
   geom_smooth(data = subset(merged_data, location_desc == "All areas"),
               method = loess, se = FALSE, 
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
   
   geom_smooth(data = subset(merged_data, location_desc == "Urban"),
               method = loess,
               se = FALSE,
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
 
   geom_smooth(data = subset(merged_data, location_desc == "Rural"),
               method = loess,
               se = FALSE,
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
   
   labs(x = "Mortality Rate (deaths per 100,000 population)",
        y = "Safely Managed Drinking Water Services (%)",
-       title = "Correlation between Mortality Rate and Water Services",
+       title = "Correlation between Mortality Rate and Water Services (2019)",
        color = "Location Type",
        shape = "Location Type") +
   
@@ -88,19 +88,19 @@ plot_loess <- ggplot(merged_data, aes(x = latest_value.x, y = latest_value.y)) +
 gp <- ggplotly(plot_loess, tooltip = "text")
 
 # Print the plot
-print(gp)
+gp
 ```
 
 ### Correlation Empty Plot
 ```{r}
 correlation_all <- cor(merged_data$latest_value.x[merged_data$location_desc == "All areas"], 
-                       merged_data$latest_value.y[merged_data$location_desc == "All areas"])
+                       merged_data$value_2019[merged_data$location_desc == "All areas"])
 
 correlation_urban <- cor(merged_data$latest_value.x[merged_data$location_desc == "Urban"], 
-                         merged_data$latest_value.y[merged_data$location_desc == "Urban"])
+                         merged_data$value_2019[merged_data$location_desc == "Urban"])
 
 correlation_rural <- cor(merged_data$latest_value.x[merged_data$location_desc == "Rural"], 
-                         merged_data$latest_value.y[merged_data$location_desc == "Rural"])
+                         merged_data$value_2019[merged_data$location_desc == "Rural"])
 
 blank_plot <- ggplot() +
   theme_void() +
@@ -120,7 +120,7 @@ blank_plot <- ggplot() +
 
 # Convert to a plotly plot
 gp_text <- ggplotly(blank_plot)
-print(gp_text)
+gp_text
 ```
 
 
@@ -155,7 +155,7 @@ grouped_bar_chart <- ggplot(merged_data, aes(x = latest_value.x_cat, fill = loca
 ggplot_grouped_bar_chart <- ggplotly(grouped_bar_chart)
 
 # Print the plot
-print(ggplot_grouped_bar_chart)
+ggplot_grouped_bar_chart
 ```
 
 ### Normalise Data using BoxCox
@@ -177,9 +177,13 @@ if (optimal_lambda == 0) {
   merged_data$latest_value.x_bc <- (merged_data$latest_value.x_positive^optimal_lambda - 1) / optimal_lambda
 }
 
+# Shift the transformed variable to be non-negative
+min_value <- min(merged_data$latest_value.x_bc)
+merged_data$latest_value.x_bc <- merged_data$latest_value.x_bc + abs(min_value) + 0.1
+
 ```
 ```{r}
-plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = latest_value.y)) +
+plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = value_2019)) +
   
   geom_point(aes(color = location_desc, 
                  shape = location_desc,
@@ -187,19 +191,19 @@ plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = latest_value.y)
   
   geom_smooth(data = subset(merged_data, location_desc == "All areas"),
               method = loess, se = FALSE, 
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
   
   geom_smooth(data = subset(merged_data, location_desc == "Urban"),
               method = loess,
               se = FALSE,
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
 
   geom_smooth(data = subset(merged_data, location_desc == "Rural"),
               method = loess,
               se = FALSE,
-              aes(color = location_desc, weight = latest_value.y),
+              aes(color = location_desc, weight = value_2019),
               show.legend = TRUE) +
   
   labs(x = "Transformed Mortality Rate (deaths per 100,000 population)",
@@ -215,18 +219,18 @@ plot_loess <- ggplot(merged_data, aes(x = latest_value.x_bc, y = latest_value.y)
 
 
 gp_normalised <- ggplotly(plot_loess, tooltip = "text")
-print(gp_normalised)
+gp_normalised
 ```
 
 ```{r}
 correlation_all <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "All areas"], 
-                       merged_data$latest_value.y[merged_data$location_desc == "All areas"])
+                       merged_data$value_2019[merged_data$location_desc == "All areas"])
 
 correlation_urban <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "Urban"], 
-                         merged_data$latest_value.y[merged_data$location_desc == "Urban"])
+                         merged_data$value_2019[merged_data$location_desc == "Urban"])
 
 correlation_rural <- cor(merged_data$latest_value.x_bc[merged_data$location_desc == "Rural"], 
-                         merged_data$latest_value.y[merged_data$location_desc == "Rural"])
+                         merged_data$value_2019[merged_data$location_desc == "Rural"])
 
 blank_plot <- ggplot() +
   theme_void() +
@@ -245,7 +249,7 @@ blank_plot <- ggplot() +
            hjust = 0.5)
 
 gp_text_normalised <- ggplotly(blank_plot)
-print(gp_text_normalised)
+gp_text_normalised
 ```
 
 ### Combining normal and unormalised plots
@@ -257,7 +261,7 @@ combined_plot <- subplot(
 )
 
 # Print the combined plot
-print(combined_plot)
+combined_plot
 ```
 
 # Test
