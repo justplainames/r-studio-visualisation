@@ -535,10 +535,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(df)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>ISO3 <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df.scaled <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="fu">scale</span>(df))</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(df.scaled, <span class="at">centers =</span> <span class="dv">3</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>df.scaled[, cluster <span class="sc">:</span><span class="er">=</span> <span class="fu">as.factor</span>(k<span class="sc">$</span>cluster)]</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df.scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#df.scaled &lt;- data.table(scale(df))</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#df.scaled &lt;- data.table(df)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>df.scaled <span class="ot">&lt;-</span> <span class="fu">data.table</span>(scaled_df)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(df.scaled, <span class="at">centers =</span> <span class="dv">3</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>df.scaled[, cluster <span class="sc">:</span><span class="er">=</span> <span class="fu">as.factor</span>(k<span class="sc">$</span>cluster)]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df.scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "mr_unsafe_water" "mr_poison"       "per_safe_water"  "per_sanitation" 
 [5] "cluster"        </code></pre>
@@ -557,9 +559,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><img src="k-means-test_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p><strong> 1. Red cluster = High cleanliness, low mortality rate<br>
+<p><strong>1. Red cluster = High cleanliness, low mortality rate<br>
 2. Green cluster = Low cleanliness, high mortality rate<br>
-3. Blue cluster = low mortality rate </strong></p>
+3. Blue cluster = low mortality rate</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(df.scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.table" "data.frame"</code></pre>
+</div>
+</div>
 
 </main>
 <!-- /main column -->

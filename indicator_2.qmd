@@ -59,7 +59,7 @@ proportion_of_safe_water
 ```
 
 ```{r}
-countries_sf <- read_sf("../WB_countries_Admin0.geojson")
+countries_sf <- read_sf("data/WB_countries_Admin0.geojson")
 countries_boundary <- st_boundary(countries_sf)
 countries_sf_simplified <- ms_simplify(countries_sf, keep = 0.05)
 countries_sf_valid <- st_make_valid(countries_sf_simplified)

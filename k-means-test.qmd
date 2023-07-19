@@ -108,13 +108,15 @@ kable(head(scaled_df))
 
 fviz_nbclust(scaled_df, kmeans, method = "wss")
 ```
-** Elbow at 3, so we choose k=3. **
 
+\*\* Elbow at 3, so we choose k=3. \*\*
 
 ```{r}
 attach(df)
 df$ISO3 <- NULL
-df.scaled <- data.table(scale(df))
+#df.scaled <- data.table(scale(df))
+#df.scaled <- data.table(df)
+df.scaled <- data.table(scaled_df)
 k <- kmeans(df.scaled, centers = 3)
 df.scaled[, cluster := as.factor(k$cluster)]
 colnames(df.scaled)
@@ -129,8 +131,11 @@ ggpairs(
   )
 ) 
 ```
-**
-1. Red cluster = High cleanliness, low mortality rate \
-2. Green cluster = Low cleanliness, high mortality rate \
-3. Blue cluster = low mortality rate
-**
+
+**1. Red cluster = High cleanliness, low mortality rate\
+2. Green cluster = Low cleanliness, high mortality rate\
+3. Blue cluster = low mortality rate**
+
+```{r}
+class(df.scaled)
+```
