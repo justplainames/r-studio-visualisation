@@ -30,7 +30,7 @@ library(dplyr)
 mortality_rate_unsafe_water <- read_csv("data/indicator_3.9.2.csv",show_col_types = FALSE)
 
 #Proportion_of_population_using_safely_managed_drinking_water_services
-proportion_of_safe_water<- read_csv("data/indicator_6.2.1.csv",show_col_types = FALSE)
+proportion_of_safe_water<- read_csv("data/indicator_6.1.1.csv",show_col_types = FALSE)
 
 #mortality_rate_unintentional_poisoning
 mortality_rate_unintentional_poisoning <- read_csv("data/indicator_3.9.3.csv",show_col_types = FALSE)
@@ -134,6 +134,7 @@ population_with_basic_handwashing_facilities
 ```
 
 ## Joining all 4 indicators
+
 ```{r}
 
 countries_tb <- left_join(
@@ -166,7 +167,9 @@ countries_tb <- left_join(
 
 names(countries_tb)
 ```
+
 ## Joining with adminGeoJson
+
 ```{r}
 countries_sf <- read_sf("../WB_countries_Admin0.geojson")
 countries_tb <- left_join(
