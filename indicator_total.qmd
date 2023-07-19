@@ -300,25 +300,28 @@ plot5
 ```{r}
 library(GGally)
 library(ggplot2)
+
+#set axis names
 countries_tb_subset_corr4 <- select(countries_tb_subset, MR_unsafe_water, MR_poisoning, handwash_access, sanitation_access, urbanisation)
 colnames(countries_tb_subset_corr4) <- c("Unsafe Water Mortality Rate",
                                          "Poisoning Mortality",
                                          "Handwashing Access (%)",
                                          "Sanitation Access (%)",
                                          "Urbanisation")
+
+#change to factor for colour
+
 countries_tb_subset_corr4$Urbanisation <- as.factor(countries_tb_subset_corr4$Urbanisation)
 
-# Create the interactive scatterplot matrix with histograms colored by Urbanisation
 plot <- ggpairs(data = countries_tb_subset_corr4,
                 columns = 1:4,
                 upper = list(continuous = "cor"),
-                lower = list(continuous = "smooth"),
-                diag = list(continuous = "bar"),
+                lower = list(continuous = "smooth", se=FALSE),
+                diag = list(continuous = "bar", bin=15),
                 mapping = aes(color = Urbanisation)) +
   theme_minimal()
 
-# Print the plot
-print(plot)
+plot
 ```
 
 ### Different Scatter plot matrix
