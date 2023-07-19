@@ -19,6 +19,8 @@ library(lintr)
 library(leaflet)
 library(RColorBrewer)
 library(DT)
+library(GGally)
+library(dplyr)
 ```
 
 # Import Indicator Files
@@ -132,7 +134,6 @@ population_with_basic_handwashing_facilities
 ```
 
 ## Joining all 4 indicators
-
 ```{r}
 
 countries_tb <- left_join(
@@ -163,6 +164,19 @@ countries_tb <- left_join(
     )
   )
 
+names(countries_tb)
+```
+## Joining with adminGeoJson
+```{r}
+countries_sf <- read_sf("../WB_countries_Admin0.geojson")
+countries_tb <- left_join(
+  countries_tb,
+  select(countries_sf,WB_A3, GDP_MD_EST, INCOME_GRP, POP_EST),
+  by = c("iso" = "WB_A3")
+)
+```
+
+```{r}
 countries_tb
 ```
 
@@ -171,6 +185,7 @@ countries_tb
 Remove certain columns and rename column for cleaner a look
 
 ```{r}
+# Drop
 clean_datatable <- select(countries_tb, 
                           -code.y, -code.x,
                           -region.y, -region.x,
@@ -178,15 +193,204 @@ clean_datatable <- select(countries_tb,
                           -country.x, -country.y,
                           -region.x.x, -region.y.y, 
                           -iso)  
+# Rename
+clean_datatable <- clean_datatable %>% rename(
+  gdp = GDP_MD_EST,
+  income_group = INCOME_GRP,
+  population = POP_EST)
+
 # Rearrange
 clean_datatable <- clean_datatable %>%
-  select(country, 
+  select(country,
+         gdp,
+         income_group,
+         population,
          urbanisation, 
          gender, 
          handwash_access,  
          sanitation_access, 
          MR_poisoning, 
-         MR_unsafe_water)
+         MR_unsafe_water,)
+
 
 datatable(clean_datatable)
+```
+
+## Correlation between 4 indicators
+
+```{r}
+# filter gender of both sexes to reduce duplicates
+countries_tb <- countries_tb |>
+  filter(gender == "Both sexes") |>
+  na.omit(countries_tb)
+countries_tb
+```
+
+```{r}
+countries_tb_subset <- select(countries_tb, MR_poisoning, MR_unsafe_water, handwash_access, sanitation_access,urbanisation,country.x)
+
+# Display the subsetted data
+print(countries_tb_subset)
+```
+
+### GGplot stuff, can delete
+
+```{r}
+# Generate Correlation between all MR_unsafe_water,MR_poisoning, handwash_access and sanitation_access
+
+#Correlation between MR_unsafe_water vs handwash_access
+cor_unsafe_water_handwash <- cor(countries_tb$MR_unsafe_water, countries_tb$handwash_access)
+
+#Correlation between MR_unsafe_water vs sanitation_access
+cor_unsafe_water_sanitation <- cor(countries_tb$MR_unsafe_water, countries_tb$sanitation_access)
+
+#Correlation between MR_unsafe_water vs MR_poisoning
+cor_unsafe_water_poisoning <- cor(countries_tb$MR_unsafe_water, countries_tb$MR_poisoning)
+
+#Correlation between handwash_access vs sanitation_access
+cor_handwash_sanitation <- cor(countries_tb$handwash_access, countries_tb$sanitation_access)
+
+#Correlation between MR_poisoning vs sanitation_access
+cor_sanitation_poisoning <- cor(countries_tb$sanitation_access, countries_tb$MR_poisoning)
+
+#Correlation between handwash_access vs MR_poisoning
+cor_handwash_poisoning <- cor(countries_tb$handwash_access, countries_tb$MR_poisoning)
+```
+
+### safe_water vs MR_poisoning (can delete)
+
+```{r}
+library(plotly)
+
+# Scatter plot for MR_unsafe_water vs sanitation_access
+plot1 <- ggplot(countries_tb, aes(x = MR_unsafe_water, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Mortality Rate due to unsafe water", y = "Sanitation Access", 
+       title = "Scatter plot of MR_unsafe_water vs Sanitation Access") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_unsafe_water_sanitation, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") + # cannot render in ggplot
+  theme_minimal()
+
+# Scatter plot for MR_unsafe_water vs MR_poisoning
+plot2 <- ggplot(countries_tb, aes(x = MR_unsafe_water, y = MR_poisoning)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Mortality Rate due to unsafe water", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of MR_unsafe_water vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_unsafe_water_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") + # cannot render in ggplot
+  theme_minimal()
+
+# Scatter plot for handwash_access vs sanitation_access
+plot3 <- ggplot(countries_tb, aes(x = handwash_access, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Handwashing Access", y = "Sanitation Access", 
+       title = "Scatter plot of Handwashing Access vs Sanitation Access") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_handwash_sanitation, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") + # cannot render in ggplot
+  theme_minimal()
+
+# Scatter plot for handwash_access vs MR_poisoning
+plot4 <- ggplot(countries_tb, aes(x = handwash_access, y = MR_poisoning)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Handwashing Access", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of Handwashing Access vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_handwash_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") + # cannot render in ggplot
+  theme_minimal()
+
+# Scatter plot for sanitation_access vs MR_poisoning
+plot5 <- ggplot(countries_tb, aes(x = MR_poisoning, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Sanitation Access", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of Sanitation Access vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_sanitation_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") + # cannot render in ggplot
+  theme_minimal()
+
+plot1
+plot2
+plot3
+plot4
+plot5
+```
+
+### Experiment with scatterplot matrix
+
+```{r}
+library(GGally)
+library(ggplot2)
+
+#set axis names
+countries_tb_subset_corr4 <- select(countries_tb_subset, MR_unsafe_water, MR_poisoning, handwash_access, sanitation_access, urbanisation,country.x)
+colnames(countries_tb_subset_corr4) <- c("Unsafe Water Mortality Rate",
+                                         "Poisoning Mortality",
+                                         "Handwashing Access (%)",
+                                         "Sanitation Access (%)",
+                                         "Urbanisation",
+                                         "Countries"
+                                         )
+countries_tb_subset_corr4
+#change to factor for colour
+
+countries_tb_subset_corr4$Urbanisation <- as.factor(countries_tb_subset_corr4$Urbanisation)
+
+plot <- ggpairs(data = countries_tb_subset_corr4,
+                columns = 1:4,
+                upper = list(continuous = "cor"),
+                lower = list(continuous = "smooth", se=FALSE),
+                diag = list(continuous = "bar", bin=30),
+                mapping = aes(color = Urbanisation),
+                tooltips = c("Countries")) +
+  theme_minimal() +
+  theme(axis.title = element_text(size = 5))
+  
+
+plot
+
+```
+
+"
+
+```{r, fig. width=4, fig. height=20}
+# Convert ggplot to plotly
+plot_interactive <- ggplotly(plot)
+
+plot_interactive <- layout(plot_interactive,
+       font = list(size = 8)
+)
+
+# Render the plotly scatterplot matrix
+plot_interactive
+```
+
+### Different Scatter plot matrix
+
+```{r}
+library(psych)
+
+countries_tb_subset_corr4 <- select(countries_tb_subset, MR_unsafe_water, MR_poisoning, handwash_access, sanitation_access, urbanisation)
+
+# Rename the columns
+colnames(countries_tb_subset_corr4) <- c("Unsafe Water Mortality Rate", 
+                                         "Poisoning Mortality",
+                                         "Handwashing Access (%)", 
+                                         "Sanitation Access (%)",
+                                         "Urbanisation")
+
+# Make urbanisation as a factor for colourisation
+countries_tb_subset_corr4$Urbanisation <- as.factor(countries_tb_subset_corr4$Urbanisation)
+
+# Map urbanisation to colors
+color_mapping <- c("All areas" = "red", "Urban" = "blue", "Rural" = "green") # Adjust to your actual factor levels and desired colors
+colors <- color_mapping[countries_tb_subset_corr4$Urbanisation]
+
+# Create scatterplot matrix without colors
+plot <- pairs.panels(countries_tb_subset_corr4[, 1:4],
+                     hist.col = "#00AFBB",
+                     bg = "transparent")
 ```

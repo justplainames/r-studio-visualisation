@@ -18,14 +18,21 @@ library(leaflet)
 library(RColorBrewer)
 ```
 
+
+# Import data
 ```{r}
 #mortality_rate_attributed_to_unsafe_water
 mortality_rate_unsafe_water <- read_csv("data/indicator_3.9.2.csv",show_col_types = FALSE)
 
 #Proportion_of_population_using_safely_managed_drinking_water_services
 proportion_of_safe_water<- read_csv("data/indicator_6.2.1.csv",show_col_types = FALSE)
+
+# Country levle details
+countries_sf <- read_sf("../WB_countries_Admin0.geojson")
 ```
 
+# Retrieve Data
+## Mortality Rate due to Unsafe Water
 ```{r}
 mortality_rate_unsafe_water <- select(
   mortality_rate_unsafe_water,
@@ -36,9 +43,12 @@ mortality_rate_unsafe_water <- select(
   mortality_rate_unsafe_water = 'latest_value'
 )
 
+mortality_rate_unsafe_water <- mortality_rate_unsafe_water%>%
+  distinct()
+
 mortality_rate_unsafe_water
 ```
-
+## Proportion of safe water management
 ```{r}
 proportion_of_safe_water <- select(
   proportion_of_safe_water,
@@ -46,20 +56,18 @@ proportion_of_safe_water <- select(
   country = 'geoAreaName',
   region = 'parentName',
   iso = 'ISO3',
-  location_desc = "location_desc",
-  value_2016 = "value_2016",
-  value_2017 = "value_2017",
-  value_2018 = "value_2018",
-  value_2019 = "value_2019",
-  value_2020 = "value_2020",
-  latest_value = 'latest_value'
+  urbanisation = "location_desc",
+  value_2019 = "value_2019"
 )
+
+proportion_of_safe_water <- proportion_of_safe_water%>%
+  distinct()
 
 proportion_of_safe_water
 ```
 
+# Cleaning and fixing geometry data
 ```{r}
-countries_sf <- read_sf("data/WB_countries_Admin0.geojson")
 countries_boundary <- st_boundary(countries_sf)
 countries_sf_simplified <- ms_simplify(countries_sf, keep = 0.05)
 countries_sf_valid <- st_make_valid(countries_sf_simplified)
@@ -96,47 +104,70 @@ countries_wrapped <- countries_wrapped |>
   st_difference(polygon)
 ```
 
-```{r}
-countries_wrapped
-```
 
-## Joining of Data
-
+# Joining of Data
 ```{r}
 # Washing data combined
-countries_sf_wash <- left_join(select(countries_wrapped,
-                                 WB_A3),
-                          proportion_of_safe_water,
-                          by = c("WB_A3" = "iso")
-                          )
-countries_sf_wash
+countries_sf_water <- left_join(
+  select(
+    countries_wrapped,
+    WB_A3
+  ),
+  proportion_of_safe_water,
+  by = c("WB_A3" = "iso")
+)
+countries_sf_water
 
 # Mortality Rate Combined
-countries_sf_mortality <- left_join(select(countries_wrapped,
-                                 WB_A3),
-                          mortality_rate_unsafe_water,
-                          by = c("WB_A3" = "iso")
-                          )
-countries_sf_wash
+countries_sf_mortality <- left_join(
+  select(
+    countries_wrapped,
+    WB_A3),
+  mortality_rate_unsafe_water,
+  by = c("WB_A3" = "iso")
+)
+
+countries_sf_mortality
 ```
 
+# Creating the Maps
+## Get the different values for all areas, urban and rural in water management
 ```{r}
-countries_sf_wash$location_desc <- replace_na(countries_sf_wash$location_desc, "missing")
+countries_sf_water_all <- countries_sf_water %>% filter(!(urbanisation %in% c("Rural","Urban")))
+countries_sf_water_urban <- countries_sf_water %>% filter(!(urbanisation %in% c("All area","Urban")))
+countries_sf_water_rural <- countries_sf_water %>% filter(!(urbanisation %in% c("Urban","All areas")))
+```
+
+### all areas for water management
+```{r}
+# Define the color palette function
+colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
+
+
+# Generate the color palette based on the number of breaks
+numBreaks <- 6
+colors <- colorPalette(numBreaks)
 tmap_mode("view")
-wash_pop <-
-  tm_shape(land_wrapped, projection = "ESRI:54012") +
-  tm_polygons(col = "grey") +
-  tm_shape(countries_sf_wash) +
+tmap_options(check.and.fix = TRUE)
+water_all <-
+  tm_shape(countries_sf_water_all, projection = "ESRI:54012") +
   tm_polygons(
-    col = "latest_value",
+    col = "value_2019",
     border.col = "grey30",
-    palette = "Greens",
-    breaks = c(-Inf, 20, 40, 60, 80, 100, Inf),
+    palette = colors,
+    breaks = c(-Inf,0, 20, 40, 60, 80, 100),
+    labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
     colorNA = "grey",
-    title = "Population (%)",
-    lwd = 0.5
+    title="Proportion (%)",
+    popup.vars=c("Country Name:" = "country",
+                 "Proportion (%): " = "value_2019"),
+    textNA = "Missing",
   ) +
-  tm_text("WB_A3", size = "AREA", auto.placement = TRUE) +  # Use the new column to set the size
+  tm_text("WB_A3",
+          size=0.8,
+          remove.overlap = TRUE,
+          auto.placement = TRUE,
+          textNA = "Missing") + 
   tm_credits(
     c("", "Source: unstats-undesa.opendata.arcgis.com"),
     position = c("right", "bottom")
@@ -152,30 +183,132 @@ wash_pop <-
     main.title = "Proportion of population using safely managed drinking water services"
   )
 
-wash_pop 
+water_all 
 ```
-
+### Urban areas
 ```{r}
-wash_pop
-```
+# Define the color palette function
+colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
 
-```{r}
-countries_sf_mortality$location_desc <- replace_na(countries_sf_mortality$location_desc, "missing")
+
+# Generate the color palette based on the number of breaks
+numBreaks <- 6
+colors <- colorPalette(numBreaks)
 tmap_mode("view")
-mortality_pop <-
-  tm_shape(land_wrapped, projection = "ESRI:54012") +
-  tm_polygons(col = "grey") +
-  tm_shape(countries_sf_mortality) +
+tmap_options(check.and.fix = TRUE)
+water_urban <-
+  tm_shape(countries_sf_water_urban, projection = "ESRI:54012") +
+  tm_polygons(
+    col = "value_2019",
+    border.col = "grey30",
+    palette = colors,
+    breaks = c(0, 20, 40, 60, 80, 100),
+    labels = c( "0-20", "20-40", "40-60", "60-80", "80-100"),
+    colorNA = "grey",
+    title="Proportion (%)",
+    popup.vars=c("Country Name:" = "country",
+                 "Proportion (%): " = "value_2019"),
+    textNA = "Missing",
+  ) +
+  tm_text("WB_A3",
+          size=0.8,
+          remove.overlap = TRUE,
+          auto.placement = TRUE,
+          textNA = "Missing") + 
+  tm_credits(
+    c("", "Source: unstats-undesa.opendata.arcgis.com"),
+    position = c("right", "bottom")
+  ) +
+  tm_layout(
+    bg.color = "lightblue",
+    frame = FALSE,
+    inner.margins = c(0.00, 0.2, 0.2, 0.1),
+    earth.boundary = TRUE,
+    space.color = "white",
+    main.title.size = 0.8,
+    title.size = 0.5,
+    main.title = "Proportion of population using safely managed drinking water services"
+  )
+
+water_urban
+```
+### Rural
+```{r}
+# Define the color palette function
+colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
+
+
+# Generate the color palette based on the number of breaks
+numBreaks <- 6
+colors <- colorPalette(numBreaks)
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+water_rural <-
+  tm_shape(countries_sf_water_rural, projection = "ESRI:54012") +
+  tm_polygons(
+    col = "value_2019",
+    border.col = "grey30",
+    palette = colors,
+    breaks = c(0, 20, 40, 60, 80, 100),
+    labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
+    colorNA = "grey",
+    title="Proportion (%)",
+    popup.vars=c("Country Name: "="country", 
+                 "Proportion (%): "="value_2019"),
+    textNA = "Missing",
+  ) +
+  tm_text("WB_A3",
+          size=0.8,
+          remove.overlap = TRUE,
+          auto.placement = TRUE,
+          textNA = "Missing") + 
+  tm_credits(
+    c("", "Source: unstats-undesa.opendata.arcgis.com"),
+    position = c("right", "bottom")
+  ) +
+  tm_layout(
+    bg.color = "lightblue",
+    frame = FALSE,
+    inner.margins = c(0.00, 0.2, 0.2, 0.1),
+    earth.boundary = TRUE,
+    space.color = "white",
+    main.title.size = 0.8,
+    title.size = 0.5,
+    main.title = "Proportion of population using safely managed drinking water services"
+  )
+
+water_rural
+```
+
+## Create map for mortality rate
+```{r}
+# Define the color palette function
+colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
+
+
+# Generate the color palette based on the number of breaks
+numBreaks <- 6
+colors <- colorPalette(numBreaks)
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+mortality_mapping <-
+  tm_shape(countries_sf_mortality, projection = "ESRI:54012") +
   tm_polygons(
     col = "mortality_rate_unsafe_water",
     border.col = "grey30",
-    palette = "Greens",
-    breaks = c(-Inf, 20, 40, 60, 80, 100, Inf),
+    palette = colors,
+    breaks = c(0, 10, 20, 40, 60, 80, Inf),
     colorNA = "grey",
-    title = "Population (%)",
-    lwd = 0.5
+    title="Mortality Rate\nPer 100, 000)",
+    popup.vars=c("Country Name:" = "country",
+                 "Proportion (100, 000): "="mortality_rate_unsafe_water"),
+    textNA = "Missing",
   ) +
-  tm_text("WB_A3", size = "AREA", auto.placement = TRUE) +  # Use the new column to set the size
+  tm_text("WB_A3",
+          size=0.8,
+          remove.overlap = TRUE,
+          auto.placement = TRUE,
+          textNA = "Missing") + 
   tm_credits(
     c("", "Source: unstats-undesa.opendata.arcgis.com"),
     position = c("right", "bottom")
@@ -188,64 +321,9 @@ mortality_pop <-
     space.color = "white",
     main.title.size = 0.8,
     title.size = 0.5,
-    main.title = "Proportion of population using safely managed drinking water services"
+    main.title = "Mortality Rate Due to Unsafe Water"
   )
 
-mortality_pop <- wash_pop + tm_facets(by = "location_desc")
-
-```
-
-```{r}
-library(shiny)
-library(tmap)
-
-# Define UI
-ui <- fluidPage(
-  selectInput("location", "Select Location", choices = unique(countries_sf_wash$location_desc)),
-  actionButton("show_button", "Show Graph"),
-  tmapOutput("map")
-)
-
-# Define server
-server <- function(input, output) {
-  # Generate the tmap object based on selected location
-  observeEvent(input$show_button, {
-    filtered_data <- countries_sf_wash[countries_sf_wash$location_desc %in% input$location, ]
-    output$map <- renderTmap({
-      wash_pop <- tm_shape(land_wrapped, projection = "ESRI:54012") +
-        tm_polygons(col = "grey") +
-        tm_shape(filtered_data) +
-        tm_polygons(
-          col = "latest_value",
-          border.col = "grey30",
-          palette = "Greens",
-          breaks = c(-Inf, 20, 40, 60, 80, 100, Inf),
-          colorNA = "grey",
-          title = "Population (%)",
-          lwd = 0.5
-        ) +
-        tm_text("WB_A3", size = "AREA", auto.placement = TRUE) +
-        tm_credits(
-          c("", "Source: unstats-undesa.opendata.arcgis.com"),
-          position = c("right", "bottom")
-        ) +
-        tm_layout(
-          bg.color = "lightblue",
-          frame = FALSE,
-          inner.margins = c(0.00, 0.2, 0.2, 0.1),
-          earth.boundary = TRUE,
-          space.color = "white",
-          main.title.size = 0.8,
-          title.size = 0.5,
-          main.title = "Proportion of population using safely managed drinking water services"
-        )
-      wash_pop
-    })
-  })
-}
-
-
-# Run the Shiny application
-shinyApp(ui, server)
+mortality_mapping
 
 ```
