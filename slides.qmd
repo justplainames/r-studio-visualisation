@@ -1933,10 +1933,10 @@ ggpair_plt <- ggpairs(
 
 ::: columns
 
-::: {.column width="70%"}
+::: {.column width="80%"}
 
 ```{r}
-#| fig-height: 7.5
+#| fig-height: 6
 
 ggplotly_plot <- ggplotly(ggpair_plt, tooltip = c("country"))
 ggplotly_plot
@@ -1947,18 +1947,18 @@ ggplotly_plot
 ::: {.column width="3%"}
 :::
 
-::: {.column width="27%"}
+::: {.column width="17%"}
 
-::: {style="color: red;"}
+::: {style="color: red; font-size: 80%;"}
 1. Low mortality rate 
 :::
 
-::: {style="color: blue;"}
+::: {style="color: green; font-size: 80%;"}
 2. High sanitation and Low mortality rate
 :::
 
-::: {style="color: green;"}
-3. Low sanitation and high mortality rate
+::: {style="color: blue; font-size: 80%;"}
+3. Low sanitation and High mortality rate
 :::
 
 :::
@@ -2117,11 +2117,10 @@ confMatrix
 accuracy <- sum(diag(confMatrix)) / sum(confMatrix)
 print(paste("Accuracy: ", accuracy))
 ```
+<br/>
+Observations:
 
-**
-For a single train-test split of \[75 25\],
-the model obtained a decent prediction accuracy of 0.7.
-**
+- For a single train-test split of \[75 25\], the model obtained a decent prediction accuracy of 0.7.
 
 ```{r}
 #| include: false
@@ -2145,9 +2144,9 @@ validated_tree
 validated_tree$resample
 ```
 
-**However, the accuracy for ten-fold cross validation was low, at 0.58.
-This is probably because the dataset is too small, and the model is overfitting.
-Overall, the model is unable to generalize to unseen data.**
+- However, the accuracy for ten-fold cross validation was low, at 0.58.
+- This is probably because the dataset is too small, and the model is overfitting.
+- Overall, the model is unable to generalize to unseen data.**
 
 
 ## Summary of Quantitative Results
