@@ -1,0 +1,141 @@
+---
+title: "my_code"
+format: html
+editor: visual
+---
+
+```{r}
+#| warning: false
+library(readr)
+library(knitr)
+library(dplyr)
+library(factoextra)
+library(cluster)
+library(GGally)
+library(data.table)
+library(sns)
+```
+
+```{r}
+mortality_rate_unsafe_water <-
+  read_csv("data/indicator_3.9.2.csv", show_col_types = FALSE)
+mortality_rate_unintentional_poisoning <-
+  read_csv("data/indicator_3.9.3.csv", show_col_types = FALSE)
+
+pop_prop_safe_water <-
+  read_csv("./data/indicator_6.1.1.csv", show_col_types = FALSE)
+pop_prop_sanitation <-
+  read_csv("./data/indicator_6.2.1.csv", show_col_types = FALSE)
+```
+
+```{r}
+mortality_rate_unsafe_water <-
+  mortality_rate_unsafe_water |>
+  select(ISO3, latest_value) |>
+  mutate(latest_value = latest_value / 1000) |> #convert to percentage
+  rename(mr_unsafe_water = latest_value) |>
+  arrange(ISO3)
+kable(head(mortality_rate_unsafe_water))
+
+
+mortality_rate_unintentional_poisoning <-
+  mortality_rate_unintentional_poisoning |>
+  filter(sex_desc == 'Both sexes') |>
+  select(ISO3, latest_value) |>
+  mutate(latest_value = latest_value / 1000) |> #convert to percentage
+  rename(mr_poison = latest_value) |>
+  arrange(ISO3)
+kable(head(mortality_rate_unintentional_poisoning))
+
+
+pop_prop_safe_water <-
+  pop_prop_safe_water |>
+  filter(location_desc == 'All areas') |>
+  select(ISO3, latest_value) |>
+  rename(per_safe_water = latest_value) |>
+  arrange(ISO3)
+kable(head(pop_prop_safe_water))
+
+
+head(pop_prop_sanitation)
+pop_prop_sanitation <-
+  pop_prop_sanitation |>
+  filter(location_desc == 'All areas') |>
+  select(ISO3, latest_value) |>
+  rename(per_sanitation = latest_value) |>
+  arrange(ISO3)
+kable(head(pop_prop_sanitation))
+
+
+combined_data <-
+  merge(
+    mortality_rate_unsafe_water,
+    mortality_rate_unintentional_poisoning,
+    by = "ISO3",
+    all = TRUE
+  )
+combined_data <-
+  merge(combined_data,
+        pop_prop_safe_water,
+        by = "ISO3",
+        all = TRUE)
+combined_data <-
+  merge(combined_data,
+        pop_prop_sanitation,
+        by = "ISO3",
+        all = TRUE)
+combined_data <- distinct(combined_data)
+
+kable(head(combined_data))
+
+duplicated_codes <- duplicated(combined_data$ISO3)
+duplicated_rows <- combined_data[duplicated_codes,]
+duplicated_rows
+```
+
+```{r}
+df <- na.omit(combined_data)
+kable(head(df))
+
+numeric_cols <-
+  c("mr_unsafe_water",
+    "mr_poison",
+    "per_safe_water",
+    "per_sanitation")
+numeric_df <- df[numeric_cols]
+scaled_df <- scale(numeric_df)
+kable(head(scaled_df))
+
+fviz_nbclust(scaled_df, kmeans, method = "wss")
+```
+
+\*\* Elbow at 3, so we choose k=3. \*\*
+
+```{r}
+attach(df)
+df$ISO3 <- NULL
+#df.scaled <- data.table(scale(df))
+#df.scaled <- data.table(df)
+df.scaled <- data.table(scaled_df)
+k <- kmeans(df.scaled, centers = 3)
+df.scaled[, cluster := as.factor(k$cluster)]
+colnames(df.scaled)
+ggpairs(
+  df.scaled,
+  aes(colour = cluster, alpha = 0.4),
+  columns = c(
+    "mr_unsafe_water",
+    "mr_poison",
+    "per_safe_water",
+    "per_sanitation"
+  )
+) 
+```
+
+**1. Red cluster = High cleanliness, low mortality rate\
+2. Green cluster = Low cleanliness, high mortality rate\
+3. Blue cluster = low mortality rate**
+
+```{r}
+class(df.scaled)
+```
