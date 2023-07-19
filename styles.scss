@@ -2,13 +2,14 @@
 
 /*-- scss:defaults --*/
 
+@import 'https://fonts.googleapis.com/css?family=Figtree:300,400,600,700';
 $font-family-sans-serif: "Figtree", san-serif !default;
 
 // Custom colours and variables
 $jet: #131516;
 $accent: #0969DA;
 $accent2: #D97809;
-$right-arrow: "\2192"; // Unicode character for right arrow
+$right-arrow: "\2023"; // Unicode character for right arrow
 
 $presentation-font-size-root: 36px;
 
@@ -26,7 +27,6 @@ $link-color: $accent !default;
 
 
 /*-- scss:rules --*/
-@import 'https://fonts.googleapis.com/css?family=Figtree:300,400,600,700';
 
 img {
   max-width: 100%;
@@ -41,6 +41,10 @@ img {
   margin-top: 1.25em;
 }
 
+.reveal strong {
+  font-weight: 600;
+}
+
 // title and headings
 
 #title-slide {
@@ -51,6 +55,7 @@ img {
     font-size: 1.4em;
     font-weight: 700;
     line-height: 1.5;
+    text-align: left;
   }
 
   .subtitle {
@@ -82,6 +87,10 @@ img {
     }
   }
 
+}
+
+.reveal h1 {
+  text-align: center;
 }
 
 .reveal h2 {
@@ -127,10 +136,19 @@ img {
 .reveal ul {
   font-weight: 300;
   padding-left: 16px;
+  margin-bottom: 0;
 
   li::marker {
     color: mix($accent, white, 70%);
   }
+}
+
+.reveal .slide ul {
+  margin-bottom: 0 !important;
+}
+
+.reveal ul li p {
+  margin-left: 0.3em;
 }
 
 .reveal ul ul {

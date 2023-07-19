@@ -8,6 +8,8 @@ format:
     transition: slide
     background-transition: fade
     theme: [default, styles.scss]
+date: 2023/07/28
+date-format: "DD MMMM YYYY"
 ---
 
 # Relationship between Safe Drinking Water and Community Well-being
@@ -46,14 +48,18 @@ The presentation will explore the significance of these indicators and potential
 
 Health and water indicators are related to Goals 3 and 6.
 
-![](images/indicators.png){.absolute left=30}
+![](images/indicators.png){.absolute left=30 bottom=-40}
 
 
 ## UN Targets Addressed
 
+. . .
+
 - **Good Health and Well-being**
 
   - Target 3.9: Reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
+
+. . .
 
 - **Clean Water and Sanitation**
   - Target 6.1: Achieve universal and equitable access to safe and affordable drinking water for all
@@ -62,9 +68,20 @@ Health and water indicators are related to Goals 3 and 6.
 
 ## Selected Indicators
 
+. . .
+
 - **Target 3.9.2** Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services) 
+
+. . .
+
 - **Target 3.9.3** Mortality rate attributed to unintentional poisoning 
+
+. . .
+
 - **Target 6.1.1** Proportion of population using safely managed drinking water services 
+
+. . . 
+
 - **Target 6.2.1** Proportion of population using (a) safely managed sanitation services and (b) a hand-washing facility with soap and water
 
 
