@@ -233,8 +233,8 @@ urban_map
 ```
 
 ### Rural
-
-```{# Define the color palette function}
+```{r}
+# Define the color palette function
 colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
 
 
@@ -272,62 +272,12 @@ rural_map <- leaflet(countries_sf_water_rural) %>%
 
 rural_map
 ```
-
 ## Create map for mortality rate
 
-```{# {r}
-# # Define the color palette function
-# colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
-# 
-# 
-# # Generate the color palette based on the number of breaks
-# numBreaks <- 6
-# colors <- colorPalette(numBreaks)
-# tmap_mode("view")
-# tmap_options(check.and.fix = TRUE)
-# mortality_mapping <-
-#   tm_shape(countries_sf_mortality, projection = "ESRI:54012") +
-#   tm_polygons(
-#     col = "mortality_rate_unsafe_water",
-#     border.col = "grey30",
-#     palette = colors,
-#     breaks = c(0, 10, 20, 40, 60, 80, Inf),
-#     colorNA = "grey",
-#     title="Mortality Rate\nPer 100, 000)",
-#     popup.vars=c("Country Name:" = "country",
-#                  "Proportion (100, 000): "="mortality_rate_unsafe_water"),
-#     textNA = "Missing",
-#   ) +
-#   tm_text("WB_A3",
-#           size=0.8,
-#           remove.overlap = TRUE,
-#           auto.placement = TRUE,
-#           textNA = "Missing") + 
-#   tm_credits(
-#     c("", "Source: unstats-undesa.opendata.arcgis.com"),
-#     position = c("right", "bottom")
-#   ) +
-#   tm_layout(
-#     bg.color = "lightblue",
-#     frame = FALSE,
-#     inner.margins = c(0.00, 0.2, 0.2, 0.1),
-#     earth.boundary = TRUE,
-#     space.color = "white",
-#     main.title.size = 0.8,
-#     title.size = 0.5,
-#     main.title = "Mortality Rate Due to Unsafe Water"
-#   )
-# 
-# mortality_mapping
-
-```
-
 ```{r}
-# Load the required libraries
-library(leaflet)
 
 # Define the color palette function
-colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
+colorPalette <- colorRampPalette(c("#FFFFDF", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
 
 
 # Generate the color palette based on the number of breaks
@@ -335,13 +285,13 @@ numBreaks <- 6
 colors <- colorPalette(numBreaks)
 
 # Create a Leaflet map
-all_map <- leaflet(countries_sf_mortality) %>%
+mortality_mapping <- leaflet(countries_sf_mortality) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(fillColor = ~colorNumeric(palette=colors, domain = c(0, 20, 40, 60, 80, 100))(mortality_rate_unsafe_water),  
               fillOpacity = 0.8,
               weight = 2,
               opacity = 1,
-              color = "white",
+              color = "grey",
               dashArray = "3",
               highlight = highlightOptions(
                 weight = 5,
@@ -352,7 +302,7 @@ all_map <- leaflet(countries_sf_mortality) %>%
               label = ~WB_A3,  
               popup = ~paste("Country Code: ", WB_A3,
                              "<br>Country: ", country,
-                             "<br>Mortality Rate from Unsafe Sanitation and Water per 100,000: ", value_2019))%>%
+                             "<br>Mortality Rate from Unsafe Sanitation and Water per 100,000: ", mortality_rate_unsafe_water))%>%
   addLegend(
     position = "bottomright",
     pal = colorNumeric(palette = colors, domain = c(0, 100)),
