@@ -38,7 +38,7 @@ img {
 
 .reveal p {
   font-weight: 300;
-  margin-top: 1.25em;
+  margin-top: 0;
 }
 
 .reveal strong {
@@ -195,4 +195,8 @@ img {
   width: auto;
   height: auto;
   object-fit: contain;
+}
+
+.dataTables_wrapper {
+  font-size: 65% !important;
 }
