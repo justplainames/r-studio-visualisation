@@ -18,8 +18,8 @@ library(leaflet)
 library(RColorBrewer)
 ```
 
-
 # Import data
+
 ```{r}
 #mortality_rate_attributed_to_unsafe_water
 mortality_rate_unsafe_water <- read_csv("data/indicator_3.9.2.csv",show_col_types = FALSE)
@@ -32,7 +32,9 @@ countries_sf <- read_sf("../WB_countries_Admin0.geojson")
 ```
 
 # Retrieve Data
+
 ## Mortality Rate due to Unsafe Water
+
 ```{r}
 mortality_rate_unsafe_water <- select(
   mortality_rate_unsafe_water,
@@ -48,7 +50,9 @@ mortality_rate_unsafe_water <- mortality_rate_unsafe_water%>%
 
 mortality_rate_unsafe_water
 ```
+
 ## Proportion of safe water management
+
 ```{r}
 proportion_of_safe_water <- select(
   proportion_of_safe_water,
@@ -67,9 +71,10 @@ proportion_of_safe_water
 ```
 
 # Cleaning and fixing geometry data
+
 ```{r}
 countries_boundary <- st_boundary(countries_sf)
-countries_sf_simplified <- ms_simplify(countries_sf, keep = 0.05)
+countries_sf_simplified <- ms_simplify(countries_boundary, keep = 0.05)
 countries_sf_valid <- st_make_valid(countries_sf_simplified)
 countries_wrapped <- st_wrap_dateline(countries_sf_valid)
 polygon <- st_polygon(x = list(rbind(c(-180.0001, 90),
@@ -86,7 +91,7 @@ countries_wrapped <- countries_wrapped |>
 
 land_sf <- read_sf("data/WB_Land.geojson")
 land_boundary <- st_boundary(land_sf)
-land_sf_simplified <- ms_simplify(land_sf, keep = 0.05)
+land_sf_simplified <- ms_simplify(land_boundary, keep = 0.05)
 land_sf_valid <- st_make_valid(land_sf_simplified)
 land_wrapped <- st_wrap_dateline(land_sf_valid)
 polygon <- st_polygon(x = list(rbind(c(-180.0001, 90),
@@ -104,8 +109,8 @@ countries_wrapped <- countries_wrapped |>
   st_difference(polygon)
 ```
 
-
 # Joining of Data
+
 ```{r}
 # Washing data combined
 countries_sf_water <- left_join(
@@ -131,7 +136,9 @@ countries_sf_mortality
 ```
 
 # Creating the Maps
+
 ## Get the different values for all areas, urban and rural in water management
+
 ```{r}
 countries_sf_water_all <- countries_sf_water %>% filter(!(urbanisation %in% c("Rural","Urban")))
 countries_sf_water_urban <- countries_sf_water %>% filter(!(urbanisation %in% c("All area","Urban")))
@@ -139,7 +146,11 @@ countries_sf_water_rural <- countries_sf_water %>% filter(!(urbanisation %in% c(
 ```
 
 ### all areas for water management
+
 ```{r}
+# Load the required libraries
+library(leaflet)
+
 # Define the color palette function
 colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
 
@@ -147,45 +158,40 @@ colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
 # Generate the color palette based on the number of breaks
 numBreaks <- 6
 colors <- colorPalette(numBreaks)
-tmap_mode("view")
-tmap_options(check.and.fix = TRUE)
-water_all <-
-  tm_shape(countries_sf_water_all, projection = "ESRI:54012") +
-  tm_polygons(
-    col = "value_2019",
-    border.col = "grey30",
-    palette = colors,
-    breaks = c(-Inf,0, 20, 40, 60, 80, 100),
+
+# Create a Leaflet map
+all_map <- leaflet(countries_sf_water_all) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorNumeric(palette=colors, domain = c(0, 20, 40, 60, 80, 100))(value_2019),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~WB_A3,  
+              popup = ~paste("Country Code: ", WB_A3,
+                             "<br>Country: ", country,
+                             "<br>Proportion of population access to safely managed drinking water service: ", value_2019))%>%
+  addLegend(
+    position = "bottomright",
+    pal = colorNumeric(palette = colors, domain = c(0, 100)),
+    values = c(0, 20, 40, 60, 80, 100),
+    title = "Proportion (%)",
     labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
-    colorNA = "grey",
-    title="Proportion (%)",
-    popup.vars=c("Country Name:" = "country",
-                 "Proportion (%): " = "value_2019"),
-    textNA = "Missing",
-  ) +
-  tm_text("WB_A3",
-          size=0.8,
-          remove.overlap = TRUE,
-          auto.placement = TRUE,
-          textNA = "Missing") + 
-  tm_credits(
-    c("", "Source: unstats-undesa.opendata.arcgis.com"),
-    position = c("right", "bottom")
-  ) +
-  tm_layout(
-    bg.color = "lightblue",
-    frame = FALSE,
-    inner.margins = c(0.00, 0.2, 0.2, 0.1),
-    earth.boundary = TRUE,
-    space.color = "white",
-    main.title.size = 0.8,
-    title.size = 0.5,
-    main.title = "Proportion of population using safely managed drinking water services"
+    opacity = 1
   )
 
-water_all 
+all_map
 ```
+
 ### Urban areas
+
 ```{r}
 # Define the color palette function
 colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
@@ -194,94 +200,132 @@ colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
 # Generate the color palette based on the number of breaks
 numBreaks <- 6
 colors <- colorPalette(numBreaks)
-tmap_mode("view")
-tmap_options(check.and.fix = TRUE)
-water_urban <-
-  tm_shape(countries_sf_water_urban, projection = "ESRI:54012") +
-  tm_polygons(
-    col = "value_2019",
-    border.col = "grey30",
-    palette = colors,
-    breaks = c(0, 20, 40, 60, 80, 100),
-    labels = c( "0-20", "20-40", "40-60", "60-80", "80-100"),
-    colorNA = "grey",
-    title="Proportion (%)",
-    popup.vars=c("Country Name:" = "country",
-                 "Proportion (%): " = "value_2019"),
-    textNA = "Missing",
-  ) +
-  tm_text("WB_A3",
-          size=0.8,
-          remove.overlap = TRUE,
-          auto.placement = TRUE,
-          textNA = "Missing") + 
-  tm_credits(
-    c("", "Source: unstats-undesa.opendata.arcgis.com"),
-    position = c("right", "bottom")
-  ) +
-  tm_layout(
-    bg.color = "lightblue",
-    frame = FALSE,
-    inner.margins = c(0.00, 0.2, 0.2, 0.1),
-    earth.boundary = TRUE,
-    space.color = "white",
-    main.title.size = 0.8,
-    title.size = 0.5,
-    main.title = "Proportion of population using safely managed drinking water services"
-  )
 
-water_urban
-```
-### Rural
-```{r}
-# Define the color palette function
-colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
-
-
-# Generate the color palette based on the number of breaks
-numBreaks <- 6
-colors <- colorPalette(numBreaks)
-tmap_mode("view")
-tmap_options(check.and.fix = TRUE)
-water_rural <-
-  tm_shape(countries_sf_water_rural, projection = "ESRI:54012") +
-  tm_polygons(
-    col = "value_2019",
-    border.col = "grey30",
-    palette = colors,
-    breaks = c(0, 20, 40, 60, 80, 100),
+# Create a Leaflet map
+urban_map <- leaflet(countries_sf_water_urban) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorNumeric(palette=colors, domain = c(0, 20, 40, 60, 80, 100))(value_2019),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~WB_A3,  
+              popup = ~paste("Country Code: ", WB_A3,
+                             "<br>Country: ", country,
+                             "<br>Proportion of population access to safely managed drinking water service: ", value_2019))%>%
+  addLegend(
+    position = "bottomright",
+    pal = colorNumeric(palette = colors, domain = c(0, 100)),
+    values = c(0, 20, 40, 60, 80, 100),
+    title = "Proportion (%)",
     labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
-    colorNA = "grey",
-    title="Proportion (%)",
-    popup.vars=c("Country Name: "="country", 
-                 "Proportion (%): "="value_2019"),
-    textNA = "Missing",
-  ) +
-  tm_text("WB_A3",
-          size=0.8,
-          remove.overlap = TRUE,
-          auto.placement = TRUE,
-          textNA = "Missing") + 
-  tm_credits(
-    c("", "Source: unstats-undesa.opendata.arcgis.com"),
-    position = c("right", "bottom")
-  ) +
-  tm_layout(
-    bg.color = "lightblue",
-    frame = FALSE,
-    inner.margins = c(0.00, 0.2, 0.2, 0.1),
-    earth.boundary = TRUE,
-    space.color = "white",
-    main.title.size = 0.8,
-    title.size = 0.5,
-    main.title = "Proportion of population using safely managed drinking water services"
+    opacity = 1
   )
 
-water_rural
+urban_map
+```
+
+### Rural
+
+```{# Define the color palette function}
+colorPalette <- colorRampPalette(c("#FF6969", "#00A0D6"))
+
+
+# Generate the color palette based on the number of breaks
+numBreaks <- 6
+colors <- colorPalette(numBreaks)
+
+# Create a Leaflet map
+rural_map <- leaflet(countries_sf_water_rural) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorNumeric(palette=colors, domain = c(0, 20, 40, 60, 80, 100))(value_2019),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~WB_A3,  
+              popup = ~paste("Country Code: ", WB_A3,
+                             "<br>Country: ", country,
+                             "<br>Proportion of population access to safely managed drinking water service: ", value_2019))%>%
+  addLegend(
+    position = "bottomright",
+    pal = colorNumeric(palette = colors, domain = c(0, 100)),
+    values = c(0, 20, 40, 60, 80, 100),
+    title = "Proportion (%)",
+    labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
+    opacity = 1
+  )
+
+rural_map
 ```
 
 ## Create map for mortality rate
+
+```{# {r}
+# # Define the color palette function
+# colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
+# 
+# 
+# # Generate the color palette based on the number of breaks
+# numBreaks <- 6
+# colors <- colorPalette(numBreaks)
+# tmap_mode("view")
+# tmap_options(check.and.fix = TRUE)
+# mortality_mapping <-
+#   tm_shape(countries_sf_mortality, projection = "ESRI:54012") +
+#   tm_polygons(
+#     col = "mortality_rate_unsafe_water",
+#     border.col = "grey30",
+#     palette = colors,
+#     breaks = c(0, 10, 20, 40, 60, 80, Inf),
+#     colorNA = "grey",
+#     title="Mortality Rate\nPer 100, 000)",
+#     popup.vars=c("Country Name:" = "country",
+#                  "Proportion (100, 000): "="mortality_rate_unsafe_water"),
+#     textNA = "Missing",
+#   ) +
+#   tm_text("WB_A3",
+#           size=0.8,
+#           remove.overlap = TRUE,
+#           auto.placement = TRUE,
+#           textNA = "Missing") + 
+#   tm_credits(
+#     c("", "Source: unstats-undesa.opendata.arcgis.com"),
+#     position = c("right", "bottom")
+#   ) +
+#   tm_layout(
+#     bg.color = "lightblue",
+#     frame = FALSE,
+#     inner.margins = c(0.00, 0.2, 0.2, 0.1),
+#     earth.boundary = TRUE,
+#     space.color = "white",
+#     main.title.size = 0.8,
+#     title.size = 0.5,
+#     main.title = "Mortality Rate Due to Unsafe Water"
+#   )
+# 
+# mortality_mapping
+
+```
+
 ```{r}
+# Load the required libraries
+library(leaflet)
+
 # Define the color palette function
 colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "#FF4400"))
 
@@ -289,41 +333,34 @@ colorPalette <- colorRampPalette(c("#FFFFDD", "#FFEEAA", "#FFBB55", "#FF7700", "
 # Generate the color palette based on the number of breaks
 numBreaks <- 6
 colors <- colorPalette(numBreaks)
-tmap_mode("view")
-tmap_options(check.and.fix = TRUE)
-mortality_mapping <-
-  tm_shape(countries_sf_mortality, projection = "ESRI:54012") +
-  tm_polygons(
-    col = "mortality_rate_unsafe_water",
-    border.col = "grey30",
-    palette = colors,
-    breaks = c(0, 10, 20, 40, 60, 80, Inf),
-    colorNA = "grey",
-    title="Mortality Rate\nPer 100, 000)",
-    popup.vars=c("Country Name:" = "country",
-                 "Proportion (100, 000): "="mortality_rate_unsafe_water"),
-    textNA = "Missing",
-  ) +
-  tm_text("WB_A3",
-          size=0.8,
-          remove.overlap = TRUE,
-          auto.placement = TRUE,
-          textNA = "Missing") + 
-  tm_credits(
-    c("", "Source: unstats-undesa.opendata.arcgis.com"),
-    position = c("right", "bottom")
-  ) +
-  tm_layout(
-    bg.color = "lightblue",
-    frame = FALSE,
-    inner.margins = c(0.00, 0.2, 0.2, 0.1),
-    earth.boundary = TRUE,
-    space.color = "white",
-    main.title.size = 0.8,
-    title.size = 0.5,
-    main.title = "Mortality Rate Due to Unsafe Water"
+
+# Create a Leaflet map
+all_map <- leaflet(countries_sf_mortality) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~colorNumeric(palette=colors, domain = c(0, 20, 40, 60, 80, 100))(mortality_rate_unsafe_water),  
+              fillOpacity = 0.8,
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              highlight = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              label = ~WB_A3,  
+              popup = ~paste("Country Code: ", WB_A3,
+                             "<br>Country: ", country,
+                             "<br>Mortality Rate from Unsafe Sanitation and Water per 100,000: ", value_2019))%>%
+  addLegend(
+    position = "bottomright",
+    pal = colorNumeric(palette = colors, domain = c(0, 100)),
+    values = c(0, 20, 40, 60, 80, 100),
+    title = "Proportion (100, 000)",
+    labels = c("0-20", "20-40", "40-60", "60-80", "80-100"),
+    opacity = 1
   )
 
 mortality_mapping
-
 ```
