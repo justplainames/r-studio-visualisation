@@ -35,6 +35,14 @@ library(DT)
 library(GGally)
 library(dplyr)
 library(psych)
+library(knitr)
+library(factoextra)
+library(GGally)
+library(data.table)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(caret)
 ```
 
 # Selecting the indicators
@@ -1563,4 +1571,256 @@ plot <- pairs.panels(countries_tb_subset_corr4[, 1:4],
                      bg = "transparent")
 ```
 
+# K-means clustering
+## Scaling the dataset
+```{r}
+df <- clean_datatable |>
+  dplyr::filter(urbanisation == "All areas", gender == "Both sexes") |>
+  dplyr::select(-urbanisation,-gender,-gdp) |>
+  na.omit()
+
+kable(head((df)))
+
+numeric_cols <-
+  c("handwash_access",
+    "sanitation_access",
+    "MR_poisoning",
+    "MR_unsafe_water")
+numeric_df <- df[numeric_cols]
+scaled_df <- scale(numeric_df)
+kable(head((scaled_df)))
+```
+
+## Elbow Criterion
+
+```{r}
+fviz_nbclust(scaled_df, kmeans, method = "wss")
+```
+**
+Elbow at 3, so we choose k=3
+**
+
+## Do k-means clustering for dataset
+
+```{r}
+scaled_df_table <- data.table(scaled_df)
+k <- kmeans(scaled_df_table, centers = 3)
+scaled_df_table[, cluster := as.factor(k$cluster)]
+
+country <- df$country
+income_group <- df$income_group
+population <- df$population
+scaled_df_table_with_country <-
+  cbind(population, income_group, country, scaled_df_table)
+
+kable(head(scaled_df_table_with_country))
+```
+
+# Create pair plot highlighting clusters
+
+```{r}
+ggpair_plt <- ggpairs(
+  scaled_df_table_with_country,
+  aes(colour = cluster, text = country),
+  diag = list(continuous = "barDiag"),
+  columns = c(
+    "handwash_access",
+    "sanitation_access",
+    "MR_poisoning",
+    "MR_unsafe_water"
+  ),
+  columnLabels = c(
+    "% Hand-wash\n Facility",
+    "% Safe Drinking\n Water",
+    "% Death by\n Posion",
+    "% Death by\n Unsafe Water"
+  )
+)
+```
+
+```{r}
+#| fig-height: 7.5
+
+ggplotly_plot <- ggplotly(ggpair_plt, tooltip = c("country"))
+ggplotly_plot
+```
+
+<br/> 
+**
+1. Red cluster = Low mortality rate \
+2. Green cluster = High sanitation and Low mortality rate \
+3. Blue cluster = Low sanitation, high mortality rate
+**
+
+# Decision Tree
+
+## Add country code to dataset
+
+```{r}
+scaled_df_table_with_cc <-
+  scaled_df_table_with_country |>
+  mutate(code = countrycode(country, origin = 'country.name', destination = 'wb'))
+kable(head(scaled_df_table_with_cc))
+
+any_na <- any(is.na(scaled_df_table_with_cc))
+any_na
+```
+
+```{r}
+countries_sf <- read_sf("./data/WB_countries_Admin0.geojson")
+countries_sf <- st_drop_geometry(countries_sf) |>
+  dplyr::select(WB_A3, REGION_WB)
+
+dataset <-
+  merge(scaled_df_table_with_cc,
+        countries_sf,
+        by.x = "code",
+        by.y = "WB_A3")
+kable(head(dataset))
+
+any_na <- any(is.na(dataset))
+any_na
+
+dplyr::glimpse(dataset)
+```
+
+
+## Create factor vairables for dataset
+
+```{r}
+
+shuffle_index <- sample(1:nrow(dataset))
+dataset <- dataset[shuffle_index,]
+
+column_types <- sapply(dataset, class)
+print(column_types)
+
+unique(dataset$REGION_WB)
+unique(dataset$income_group)
+
+setnames(dataset, "REGION_WB", "region")
+
+dataset <- dataset[, c("cluster", "region", "income_group", "population")]
+ 
+dataset$income_group <- factor(
+  dataset$income_group,
+  levels = c(
+    '5. Low income',
+    '4. Lower middle income',
+    '3. Upper middle income',
+    '2. High income: nonOECD'
+  ),
+  labels = c('low', 'lower middle', 'upper middle', 'high')
+)
+
+dataset$region <- factor(
+  dataset$region,
+  levels = c(
+    'Sub-Saharan Africa',
+    'South Asia',
+    'Middle East & North Africa',
+    'Europe & Central Asia',
+    'East Asia & Pacific',
+    'Latin America & Caribbean'
+  ),
+  labels = c(
+    'Sub-Saharan Africa',
+    'South Asia',
+    'Middle East & North Africa',
+    'Europe & Central Asia',
+    'East Asia & Pacific',
+    'Latin America & Caribbean'
+  )
+)
+
+any_na <- any(is.na(dataset))
+any_na
+
+clean_dataset <- dataset
+dplyr::glimpse(clean_dataset)
+```
+
+## Train decision tree
+
+```{r}
+train_rows <-
+  createDataPartition(clean_dataset$cluster, p = 0.75, list = FALSE)
+train <- clean_dataset[train_rows, ]
+test <- clean_dataset[-train_rows, ]
+
+# dim(train)
+# dim(test)
+# prop.table(table(train$cluster))
+# prop.table(table(test$cluster))
+
+tree_model <- rpart(cluster ~ ., data = train, method = "class")
+
+split_fun <- function(x, labs, digits, varlen, faclen)
+{
+  for (i in 1:length(labs)) {
+    labs[i] <- paste(strwrap(labs[i], width = 40), collapse = "\n")
+  }
+  labs
+}
+
+rpart.plot(tree_model,
+           extra = 102,
+           digits = -3,
+           split.fun = split_fun)
+```
+**
+The decision tree only considered the region variable for classification.
+**
+
+# Evaluation of decision tree
+
+## Relative importance
+
+```{r}
+rel_impt <- as.data.frame(tree_model$variable.importance)
+rel_impt
+```
+
+**
+Relative importance of the predictors for classification are as follows:\
+- Region: 18.01 \
+- Income: 6.49 \
+- Population size: 1.74
+**
+
+## Prediction with decision tree
+
+```{r}
+set.seed(12345)
+prediction <- predict(tree_model, newdata = test, type = "class")
+confMatrix <- table(prediction, test$cluster)
+confMatrix
+accuracy <- sum(diag(confMatrix)) / sum(confMatrix)
+print(paste('Accuracy: ', accuracy))
+```
+
+**
+For a single train-test split of \[75 25\], the model obtained a decent prediction accuracy of 0.7. \
+**
+
+## Ten-fold cross validation
+
+```{r}
+train_control <- trainControl(method = "cv",  # Use cross validation
+                              number = 10)    # Use 10 folds
+
+# tune_grid = expand.grid(cp=c(0.0001)) # complexity parameter (size of tree)
+
+validated_tree <- train(cluster ~ .,
+                        data = clean_dataset,
+                        method = "rpart",
+                        trControl = train_control)
+
+validated_tree 
+validated_tree$resample
+```
+
+**However, the accuracy for ten-fold cross validation was low, at 0.58.\
+This is probably because the dataset is too small, and the model is overfitting.
+Overall, the model is unable to generalize to unseen data.**
 
