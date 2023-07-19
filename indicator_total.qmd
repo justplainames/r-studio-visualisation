@@ -331,11 +331,11 @@ plot
 
 "
 
-```{r}
+```{r, fig. width=4, fig. height=20}
 # Convert ggplot to plotly
 plot_interactive <- ggplotly(plot)
 
-layout(plot_interactive, 
+plot_interactive <- layout(plot_interactive, 
        font = list(size = 8)
 )
 
