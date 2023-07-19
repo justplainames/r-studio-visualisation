@@ -5,56 +5,55 @@ format:
   revealjs: 
     slide-number: true
     reference-location: document
+    theme: [default, styles.scss]
 ---
 
-# Replace title here
+# Relationship between Safe Drinking Water and Community Well-being
 
 
 ## Purpose of this presentation
 
-As highlighted by ...
+The purpose of this presentation is to examine the relationship between indicators of good health and well-being, specifically targeting the reduction of deaths and illnesses caused by hazardous chemicals, air, water, soil pollution, and contamination. 
+
+The presentation will explore the significance of these indicators and potential strategies for achieving improvements in this area.
 
 
 ## Research Questions
 
-To what extend...
-
-Specifically, what is the relationship between ...
-
-Can *xxx*, *xxx* and *xxx* serve as predictors of *xxx* in *xxx* and *xxx*?
-
+- To what extent does exposure to hazardous chemicals and pollution influence mortality and illness rates?
+- Specifically, what is the relationship between access to safe and affordable drinking water and the proportion of population using safe drinking water services?
+- How does the availability of sanitation and hygiene facilities, particularly targeting women, affect the mortality rate attributed to unsafe water and hygiene?
+- What are the key factors contributing to unintentional poisoning mortality, and how can they be mitigated?
 
 ## Importance of this research
 
-- *Point 1*:
+- *Public health impact* <br>
+  Addresses hazardous chemicals, pollution, and unsafe water's effect on mortality and illness rates.
 
-  xxx
+- *Sustainable Development Goals* <br>
+  Supports Goal 3 by focusing on reducing deaths and illnesses from pollution.
 
-- *Point 2*:
+- *Policy implications* <br>
+  Informs targeted strategies to address health risks.
 
-  xxx
-
-- *Point 3*:
-
-  xxx
-
-- *Point 4*:
-
-  xxx
+- *Well-being enhancement* <br>
+  Contributes to promoting healthier lives and well-being.
 
 
 ## UN Sustainable Development Goals
 
-*xxx* are related to Goals 3 and 6.
+Health and water indicators are related to Goals 3 and 6.
+
+![](images/indicators.png)
 
 
 ## UN Targets Addressed
 
-- *Good Health and Well-being*:
+- *Good Health and Well-being*
 
   - Target 3.9: Reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
 
-- *Clean Water and Sanitation*:
+- *Clean Water and Sanitation*
   - Target 6.1: Achieve universal and equitable access to safe and affordable drinking water for all
   - Target 6.2: Achieve adequate and equitable sanitation and hygiene targeting women
 
@@ -67,14 +66,14 @@ Can *xxx*, *xxx* and *xxx* serve as predictors of *xxx* in *xxx* and *xxx*?
 - Target 6.2.1: Proportion of population using (a) safely managed sanitation services and (b) a hand-washing facility with soap and water
 
 
-## Map: xxx
+## Map: Water, sanitation, hygiene mortality rate (3.9.2)
 
 *inserts map*
 
 Missing values for xx countries.
 
 
-## Map: xxx
+## Map: Unintentional poisoning mortality rate (3.9.3)
 
 *inserts map*
 
@@ -121,14 +120,14 @@ text / description here
 :::
 
 
-## Map: xxx
+## Map: Safely managed drinking water proportion (6.1.1)
 
 *inserts map*
 
 Missing values for xx countries.
 
 
-## Map: xxx
+## Map: Safely managed sanitation, hand-washing proportion (6.2.1)
 
 *inserts map*
 

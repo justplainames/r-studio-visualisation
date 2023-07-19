@@ -1,0 +1,12 @@
+/*-- scss:defaults --*/
+
+$font-family-sans-serif: "Figtree", "Arial", Palatino,
+  FreeSerif, serif !default;
+
+
+/*-- scss:rules --*/
+@import 'https://fonts.googleapis.com/css?family=Figtree:300,400,600,700';
+
+img {
+  max-width: 100%;
+}
