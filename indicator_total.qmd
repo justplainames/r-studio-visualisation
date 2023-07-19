@@ -336,9 +336,7 @@ plot
 plot_interactive <- ggplotly(plot)
 
 layout(plot_interactive, 
-       font = list(size = 6),
-       width = "100%",
-       height = "100%"
+       font = list(size = 8)
 )
 
 # Render the plotly scatterplot matrix
