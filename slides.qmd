@@ -5,6 +5,8 @@ format:
   revealjs: 
     slide-number: true
     reference-location: document
+    transition: slide
+    background-transition: fade
     theme: [default, styles.scss]
 ---
 
@@ -27,16 +29,16 @@ The presentation will explore the significance of these indicators and potential
 
 ## Importance of this research
 
-- *Public health impact* <br>
+- **Public health impact** <br>
   Addresses hazardous chemicals, pollution, and unsafe water's effect on mortality and illness rates.
 
-- *Sustainable Development Goals* <br>
+- **Sustainable Development Goals** <br>
   Supports Goal 3 by focusing on reducing deaths and illnesses from pollution.
 
-- *Policy implications* <br>
+- **Policy implications** <br>
   Informs targeted strategies to address health risks.
 
-- *Well-being enhancement* <br>
+- **Well-being enhancement** <br>
   Contributes to promoting healthier lives and well-being.
 
 
@@ -44,26 +46,26 @@ The presentation will explore the significance of these indicators and potential
 
 Health and water indicators are related to Goals 3 and 6.
 
-![](images/indicators.png)
+![](images/indicators.png){.absolute left=30}
 
 
 ## UN Targets Addressed
 
-- *Good Health and Well-being*
+- **Good Health and Well-being**
 
   - Target 3.9: Reduce the number of deaths and illnesses from hazardous chemicals and air, water and soil pollution and contamination
 
-- *Clean Water and Sanitation*
+- **Clean Water and Sanitation**
   - Target 6.1: Achieve universal and equitable access to safe and affordable drinking water for all
   - Target 6.2: Achieve adequate and equitable sanitation and hygiene targeting women
 
 
 ## Selected Indicators
 
-- Target 3.9.2: Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services) 
-- Target 3.9.3: Mortality rate attributed to unintentional poisoning 
-- Target 6.1.1: Proportion of population using safely managed drinking water services 
-- Target 6.2.1: Proportion of population using (a) safely managed sanitation services and (b) a hand-washing facility with soap and water
+- **Target 3.9.2** Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (exposure to unsafe Water, Sanitation and Hygiene for All (WASH) services) 
+- **Target 3.9.3** Mortality rate attributed to unintentional poisoning 
+- **Target 6.1.1** Proportion of population using safely managed drinking water services 
+- **Target 6.2.1** Proportion of population using (a) safely managed sanitation services and (b) a hand-washing facility with soap and water
 
 
 ## Map: Water, sanitation, hygiene mortality rate (3.9.2)
