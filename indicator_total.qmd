@@ -134,7 +134,6 @@ population_with_basic_handwashing_facilities
 ```
 
 ## Joining all 4 indicators
-
 ```{r}
 
 countries_tb <- left_join(
@@ -167,12 +166,26 @@ countries_tb <- left_join(
 
 names(countries_tb)
 ```
+## Joining with adminGeoJson
+```{r}
+countries_sf <- read_sf("../WB_countries_Admin0.geojson")
+countries_tb <- left_join(
+  countries_tb,
+  select(countries_sf,WB_A3, GDP_MD_EST, INCOME_GRP, POP_EST),
+  by = c("iso" = "WB_A3")
+)
+```
+
+```{r}
+countries_tb
+```
 
 ## Clean data
 
 Remove certain columns and rename column for cleaner a look
 
 ```{r}
+# Drop
 clean_datatable <- select(countries_tb, 
                           -code.y, -code.x,
                           -region.y, -region.x,
@@ -180,15 +193,25 @@ clean_datatable <- select(countries_tb,
                           -country.x, -country.y,
                           -region.x.x, -region.y.y, 
                           -iso)  
+# Rename
+clean_datatable <- clean_datatable %>% rename(
+  gdp = GDP_MD_EST,
+  income_group = INCOME_GRP,
+  population = POP_EST)
+
 # Rearrange
 clean_datatable <- clean_datatable %>%
-  select(country, 
+  select(country,
+         gdp,
+         income_group,
+         population,
          urbanisation, 
          gender, 
          handwash_access,  
          sanitation_access, 
          MR_poisoning, 
-         MR_unsafe_water)
+         MR_unsafe_water,)
+
 
 datatable(clean_datatable)
 ```
@@ -323,7 +346,9 @@ plot <- ggpairs(data = countries_tb_subset_corr4,
                 diag = list(continuous = "bar", bin=30),
                 mapping = aes(color = Urbanisation),
                 tooltips = c("Countries")) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.title = element_text(size = 5))
+  
 
 plot
 
@@ -335,7 +360,7 @@ plot
 # Convert ggplot to plotly
 plot_interactive <- ggplotly(plot)
 
-plot_interactive <- layout(plot_interactive, 
+plot_interactive <- layout(plot_interactive,
        font = list(size = 8)
 )
 
