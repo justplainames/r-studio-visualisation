@@ -20,6 +20,7 @@ library(leaflet)
 library(RColorBrewer)
 library(DT)
 library(GGally)
+library(dplyr)
 ```
 
 # Import Indicator Files
@@ -302,13 +303,15 @@ library(GGally)
 library(ggplot2)
 
 #set axis names
-countries_tb_subset_corr4 <- select(countries_tb_subset, MR_unsafe_water, MR_poisoning, handwash_access, sanitation_access, urbanisation)
+countries_tb_subset_corr4 <- select(countries_tb_subset, MR_unsafe_water, MR_poisoning, handwash_access, sanitation_access, urbanisation,country.x)
 colnames(countries_tb_subset_corr4) <- c("Unsafe Water Mortality Rate",
                                          "Poisoning Mortality",
                                          "Handwashing Access (%)",
                                          "Sanitation Access (%)",
-                                         "Urbanisation")
-
+                                         "Urbanisation",
+                                         "Countries"
+                                         )
+countries_tb_subset_corr4
 #change to factor for colour
 
 countries_tb_subset_corr4$Urbanisation <- as.factor(countries_tb_subset_corr4$Urbanisation)
@@ -317,11 +320,29 @@ plot <- ggpairs(data = countries_tb_subset_corr4,
                 columns = 1:4,
                 upper = list(continuous = "cor"),
                 lower = list(continuous = "smooth", se=FALSE),
-                diag = list(continuous = "bar", bin=15),
-                mapping = aes(color = Urbanisation)) +
+                diag = list(continuous = "bar", bin=30),
+                mapping = aes(color = Urbanisation),
+                tooltips = c("Countries")) +
   theme_minimal()
 
 plot
+
+```
+
+"
+
+```{r}
+# Convert ggplot to plotly
+plot_interactive <- ggplotly(plot)
+
+layout(plot_interactive, 
+       font = list(size = 6),
+       width = "100%",
+       height = "100%"
+)
+
+# Render the plotly scatterplot matrix
+plot_interactive
 ```
 
 ### Different Scatter plot matrix
