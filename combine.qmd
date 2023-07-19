@@ -55,7 +55,6 @@ population_with_basic_handwashing_facilities<- read_csv("data/indicator_6.2.1.cs
 # Map of Indicator 1
 ## Select specific columns for mortality rate unintentional poisoning
 ```{r}
-#| label: select specific columns for mortality rate
 mortality_rate_unintentional_poisoning <- dplyr::select(
   mortality_rate_unintentional_poisoning,
   code = 'geoAreaCode',
@@ -78,7 +77,6 @@ mortality_rate_unintentional_poisoning
 
 ## Histogram of mortality rate unintential poisoning for year 2019
 ```{r}
-#| label: mortality rate histograms
 #| fig-width: 4.0
 #| fig-height: 2.5
 #| out-width: 56%
@@ -93,7 +91,6 @@ mortality_histo
 
 ## Select specific columns for population with basic handwashing facilities
 ```{r}
-#| label: select specific columns for population with basic handwashing facilities
 population_with_basic_handwashing_facilities <- dplyr::select(
   population_with_basic_handwashing_facilities,
   code = 'geoAreaCode',
@@ -115,7 +112,6 @@ population_with_basic_handwashing_facilities
 
 ## Histogram of population with basic handwashing facilities for year 2019
 ```{r}
-#| label: pop_with_handwashing_facilities histograms
 #| fig-width: 4.0
 #| fig-height: 2.5
 #| out-width: 56%
@@ -1063,7 +1059,6 @@ proportion_of_safe_water_indicators
 ```
 
 ```{r}
-#| label: select specific columns for mortality rate
 mortality_rate_unintentional_poisoning_indicators <- dplyr::select(
   mortality_rate_unintentional_poisoning_indicators,
   code = 'geoAreaCode',
@@ -1088,7 +1083,6 @@ mortality_rate_unintentional_poisoning_indicators
 ```
 
 ```{r}
-#| label: select specific columns for population with basic handwashing facilities
 population_with_basic_handwashing_facilities_indicators <- dplyr::select(
   population_with_basic_handwashing_facilities_indicators,
   code = 'geoAreaCode',
@@ -1150,6 +1144,7 @@ names(countries_tb)
 ## Joining with adminGeoJson
 
 ```{r}
+#| warning: false
 countries_sf <- read_sf("./data/WB_countries_Admin0.geojson")
 countries_tb <- left_join(
   countries_tb,
@@ -1249,7 +1244,7 @@ plot
 
 
 
-```{r, fig. width=4, fig. height=20}
+```{r, fig.width=4, fig.height=20}
 # Convert ggplot to plotly
 plot_interactive <- ggplotly(plot)
 
