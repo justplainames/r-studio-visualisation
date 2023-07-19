@@ -593,7 +593,7 @@ leaflet(countries_sf_both) %>%
 ## MR vs Population with basic handwashing facilities {.smaller}
 
 ::: {.smaller} 
-There is a strong negative correlation between Mortality rate and Population with basic handwashing facilities
+There is a strong negative correlation between Mortality rate and Population with basic handwashing facilities.
 :::
 
 ```{r}
@@ -1524,6 +1524,10 @@ gp_text_normalised <- ggplotly(blank_plot)
 # gp_text_normalised
 ```
 
+::: {.smaller} 
+There is a strong negative correlation between Mortality rate and water services.
+:::
+
 ```{r}
 # Combining normal and unnormalised plots
 
@@ -2167,6 +2171,6 @@ validated_tree$resample
 
 ```{r}
 #| label: lint
-
+#| include: false
 length(lint("slides.qmd"))
 ```
