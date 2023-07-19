@@ -121,20 +121,24 @@ Health and water indicators are related to Goals 3 and 6.
 ```{r}
 # mortality_rate_attributed_to_unsafe_water
 mortality_rate_unsafe_water <- read_csv("data/indicator_3.9.2.csv",
-                                        show_col_types = FALSE)
+  show_col_types = FALSE
+)
 
-#safely_managed_drinking_water_services
+# safely_managed_drinking_water_services
 proportion_of_safe_water <- read_csv("data/indicator_6.1.1.csv",
-                                     show_col_types = FALSE)
+  show_col_types = FALSE
+)
 
 # unintentional_poisoning
 unintentional_poisoning <- read_csv("data/indicator_3.9.3.csv",
-                                    show_col_types = FALSE)
+  show_col_types = FALSE
+)
 
 # proportion-of-population-with-basic-handwashing-facilities
 basic_handwashing_facilities <-
   read_csv("data/indicator_6.2.1.csv",
-            show_col_types = FALSE)
+    show_col_types = FALSE
+  )
 ```
 
 ## Map: Managed sanitation, hand-washing proportion (6.2.1): All areas
@@ -153,13 +157,17 @@ unintentional_poisoning <- dplyr::select(
 # drop rows if contains at least one NA value
 unintentional_poisoning <- na.omit(unintentional_poisoning)
 
-#Histogram of mortality rate unintential poisoning
-mortality_histo <- ggplot(unintentional_poisoning,
-                          aes(x = unintentional_poisoning_2019)) +
+# Histogram of mortality rate unintential poisoning
+mortality_histo <- ggplot(
+  unintentional_poisoning,
+  aes(x = unintentional_poisoning_2019)
+) +
   geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
-  labs(title = "Mortality rate unintentional poisoning for Year 2019",
-       x = "Mortality Rate (per 100,000)",
-       y = "Number of Country")
+  labs(
+    title = "Mortality rate unintentional poisoning for Year 2019",
+    x = "Mortality Rate (per 100,000)",
+    y = "Number of Country"
+  )
 
 # Select specific columns for population with basic handwashing facilities
 basic_handwashing_facilities <- dplyr::select(
@@ -175,15 +183,21 @@ basic_handwashing_facilities <- dplyr::select(
 # drop rows if contains at least one NA value
 basic_handwashing_facilities <- na.omit(basic_handwashing_facilities)
 
-#histogram of basic handwashing facilities
-handwashing_facilities_histo <- ggplot(basic_handwashing_facilities,
-                                       aes(x = pop_with_basic_handwashing_facilites_2019)) +
-  geom_histogram(binwidth = 5,
-                 fill = "blue",
-                 color = "black") +
-  labs(title = "Population with basic handwashing facilities for Year 2019",
-       x = "Population (%)",
-       y = "Number of Country")
+# histogram of basic handwashing facilities
+handwashing_facilities_histo <- ggplot(
+  basic_handwashing_facilities,
+  aes(x = pop_with_basic_handwashing_facilites_2019)
+) +
+  geom_histogram(
+    binwidth = 5,
+    fill = "blue",
+    color = "black"
+  ) +
+  labs(
+    title = "Population with basic handwashing facilities for Year 2019",
+    x = "Population (%)",
+    y = "Number of Country"
+  )
 
 
 # Left join between mortality rate and basic handwashing
@@ -221,12 +235,13 @@ countries_sf <-
     by = join_by(WB_A3 == iso)
   ) |>
   dplyr::select(country,
-                continent = "CONTINENT",
-                gender = "gender",
-                area = "area",
-                iso = WB_A3,
-                unintentional_poisoning_2019,
-                pop_with_basic_handwashing_facilites_2019)
+    continent = "CONTINENT",
+    gender = "gender",
+    area = "area",
+    iso = WB_A3,
+    unintentional_poisoning_2019,
+    pop_with_basic_handwashing_facilites_2019
+  )
 
 
 polygon <- st_polygon(x = list(rbind(
@@ -584,8 +599,8 @@ There is a strong negative correlation between Mortality rate and Population wit
 ```{r}
 # Plots of Indicator between mortality rate and population with basic handwashing facilities
 
-countries_sf <- countries_sf[!is.na(countries_sf$unintentional_poisoning_2019) 
-                             & !is.na(countries_sf$pop_with_basic_handwashing_facilites_2019),]
+countries_sf <- countries_sf[!is.na(countries_sf$unintentional_poisoning_2019) &
+  !is.na(countries_sf$pop_with_basic_handwashing_facilites_2019), ]
 
 countries_sf <- countries_sf %>%
   filter(gender == "Both sexes")
@@ -594,9 +609,13 @@ countries_sf <- countries_sf %>%
 # countries_sf
 
 # Plot the data
-plot_loess <- ggplot(countries_sf,
-                     aes(x = unintentional_poisoning_2019,
-                         y = pop_with_basic_handwashing_facilites_2019)) +
+plot_loess <- ggplot(
+  countries_sf,
+  aes(
+    x = unintentional_poisoning_2019,
+    y = pop_with_basic_handwashing_facilites_2019
+  )
+) +
   geom_point(aes(
     color = area,
     shape = area,
@@ -1040,7 +1059,8 @@ all_map <- leaflet(countries_sf_water_all) %>%
     popup = ~ paste(
       "Country Code: ", WB_A3,
       "<br>Country: ", country,
-      "<br>Proportion of population access to safely managed drinking water service: ", value_2019
+      "<br>Proportion of population access to safely managed drinking water service: ",
+      value_2019
     )
   ) %>%
   addLegend(
@@ -1071,7 +1091,10 @@ colors <- colorPalette(numBreaks)
 urban_map <- leaflet(countries_sf_water_urban) %>%
   addProviderTiles(providers$CartoDB.Positron) %>%
   addPolygons(
-    fillColor = ~ colorNumeric(palette = colors, domain = c(0, 20, 40, 60, 80, 100))(value_2019),
+    fillColor = ~ colorNumeric(
+      palette = colors,
+      domain = c(0, 20, 40, 60, 80, 100)
+    )(value_2019),
     fillOpacity = 0.8,
     weight = 2,
     opacity = 1,
@@ -1088,7 +1111,8 @@ urban_map <- leaflet(countries_sf_water_urban) %>%
     popup = ~ paste(
       "Country Code: ", WB_A3,
       "<br>Country: ", country,
-      "<br>Proportion of population access to safely managed drinking water service: ", value_2019
+      "<br>Proportion of population access to safely managed drinking water service: ",
+      value_2019
     )
   ) %>%
   addLegend(
@@ -1135,7 +1159,8 @@ rural_map <- leaflet(countries_sf_water_rural) %>%
     popup = ~ paste(
       "Country Code: ", WB_A3,
       "<br>Country: ", country,
-      "<br>Proportion of population access to safely managed drinking water service: ", value_2019
+      "<br>Proportion of population access to safely managed drinking water service: ",
+      value_2019
     )
   ) %>%
   addLegend(
@@ -1203,8 +1228,6 @@ mortality_mapping
 ```{r}
 merged_data <- merge(mortality_rate_unsafe_water, proportion_of_safe_water, by = c("geoAreaCode", "geoAreaName"))
 merged_data <- merged_data[!is.na(merged_data$value_2019), ] # remove NA values for 2019
-# Display the first few rows of the merged dataframe
-# head(merged_data)
 ```
 
 ```{r}
@@ -1539,15 +1562,18 @@ mr_unsafe_water_indicators <- read_csv("data/indicator_3.9.2.csv", show_col_type
 
 # Proportion_of_population_using_safely_managed_drinking_water_services
 prop_of_safe_water_indicators <- read_csv("data/indicator_6.1.1.csv",
-                                          show_col_types = FALSE)
+  show_col_types = FALSE
+)
 
 # unintentional_poisoning
 unintentional_poi_ind <- read_csv("data/indicator_3.9.3.csv",
-                                  show_col_types = FALSE)
+  show_col_types = FALSE
+)
 
 # proportion-of-population-with-basic-handwashing-facilities-on-premises-by-urban-rural-percent
 handwashing_facil_ind <- read_csv("data/indicator_6.2.1.csv",
-                                  show_col_types = FALSE)
+  show_col_types = FALSE
+)
 ```
 
 ```{r}
@@ -1602,11 +1628,6 @@ unintentional_poi_ind <- na.omit(unintentional_poi_ind)
 # Remove duplicates
 unintentional_poi_ind <- unintentional_poi_ind %>%
   distinct()
-
-# check for empty row
-# any(is.na(unintentional_poi_ind))
-
-# unintentional_poi_ind
 ```
 
 ```{r}
@@ -1627,11 +1648,6 @@ handwashing_facil_ind <- na.omit(handwashing_facil_ind)
 # Remove duplicates
 handwashing_facil_ind <- handwashing_facil_ind %>%
   distinct()
-
-# check for empty row
-# any(is.na(unintentional_poi_ind))
-
-# handwashing_facil_ind
 ```
 
 
@@ -1667,8 +1683,6 @@ countries_tb <- left_join(
       .default = iso
     )
   )
-
-# names(countries_tb)
 ```
 
 
@@ -1744,9 +1758,6 @@ countries_tb <- countries_tb |>
 
 ```{r}
 countries_tb_subset <- dplyr::select(countries_tb, MR_poisoning, MR_unsafe_water, handwash_access, sanitation_access, urbanisation, country.x)
-
-# Display the subsetted data
-# print(countries_tb_subset)
 ```
 
 
@@ -1997,7 +2008,6 @@ shuffle_index <- sample(1:nrow(dataset))
 dataset <- dataset[shuffle_index, ]
 
 column_types <- sapply(dataset, class)
-# print(column_types)
 
 unique(dataset$REGION_WB)
 unique(dataset$income_group)
@@ -2051,11 +2061,6 @@ train_rows <-
   createDataPartition(clean_dataset$cluster, p = 0.75, list = FALSE)
 train <- clean_dataset[train_rows, ]
 test <- clean_dataset[-train_rows, ]
-
-# dim(train)
-# dim(test)
-# prop.table(table(train$cluster))
-# prop.table(table(test$cluster))
 
 tree_model <- rpart(cluster ~ ., data = train, method = "class")
 
