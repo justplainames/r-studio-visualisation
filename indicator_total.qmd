@@ -19,6 +19,7 @@ library(lintr)
 library(leaflet)
 library(RColorBrewer)
 library(DT)
+library(GGally)
 ```
 
 # Import Indicator Files
@@ -163,7 +164,7 @@ countries_tb <- left_join(
     )
   )
 
-countries_tb
+names(countries_tb)
 ```
 
 ## Clean data
@@ -189,4 +190,125 @@ clean_datatable <- clean_datatable %>%
          MR_unsafe_water)
 
 datatable(clean_datatable)
+```
+
+## Correlation between 4 indicators
+
+```{r}
+# filter gender of both sexes to reduce duplicates
+countries_tb <- countries_tb |>
+  filter(gender == "Both sexes") |>
+  na.omit(countries_tb)
+countries_tb
+```
+
+```{r}
+countries_tb_subset <- select(countries_tb, MR_poisoning, MR_unsafe_water, handwash_access, sanitation_access)
+
+# Display the subsetted data
+print(countries_tb_subset)
+```
+
+```{r}
+# Generate Correlation between all MR_unsafe_water,MR_poisoning, handwash_access and sanitation_access
+
+#Correlation between MR_unsafe_water vs handwash_access
+cor_unsafe_water_handwash <- cor(countries_tb$MR_unsafe_water, countries_tb$handwash_access)
+
+#Correlation between MR_unsafe_water vs sanitation_access
+cor_unsafe_water_sanitation <- cor(countries_tb$MR_unsafe_water, countries_tb$sanitation_access)
+
+#Correlation between MR_unsafe_water vs MR_poisoning
+cor_unsafe_water_poisoning <- cor(countries_tb$MR_unsafe_water, countries_tb$MR_poisoning)
+
+#Correlation between handwash_access vs sanitation_access
+cor_handwash_sanitation <- cor(countries_tb$handwash_access, countries_tb$sanitation_access)
+
+#Correlation between MR_poisoning vs sanitation_access
+cor_sanitation_poisoning <- cor(countries_tb$sanitation_access, countries_tb$MR_poisoning)
+```
+
+safe_water vs MR_poisoning
+
+```{r}
+library(plotly)
+
+# Scatter plot for MR_unsafe_water vs sanitation_access
+plot1 <- ggplot(countries_tb, aes(x = MR_unsafe_water, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Mortality Rate due to unsafe water", y = "Sanitation Access", 
+       title = "Scatter plot of MR_unsafe_water vs Sanitation Access") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_unsafe_water_sanitation, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") +
+  theme_minimal()
+
+# Scatter plot for MR_unsafe_water vs MR_poisoning
+plot2 <- ggplot(countries_tb, aes(x = MR_unsafe_water, y = MR_poisoning)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Mortality Rate due to unsafe water", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of MR_unsafe_water vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_unsafe_water_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") +
+  theme_minimal()
+
+# Scatter plot for handwash_access vs sanitation_access
+plot3 <- ggplot(countries_tb, aes(x = handwash_access, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Handwashing Access", y = "Sanitation Access", 
+       title = "Scatter plot of Handwashing Access vs Sanitation Access") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_handwash_sanitation, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") +
+  theme_minimal()
+
+# Scatter plot for handwash_access vs MR_poisoning
+plot4 <- ggplot(countries_tb, aes(x = handwash_access, y = MR_poisoning)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Handwashing Access", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of Handwashing Access vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_handwash_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") +
+  theme_minimal()
+
+# Scatter plot for sanitation_access vs MR_poisoning
+plot5 <- ggplot(countries_tb, aes(x = MR_poisoning, y = sanitation_access)) +
+  geom_point(aes(color = urbanisation, text = paste("Country:", country))) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Sanitation Access", y = "Mortality Rate due to poisoning", 
+       title = "Scatter plot of Sanitation Access vs MR_poisoning") +
+  annotate("text", x = Inf, y = Inf, label = paste("Correlation: ", round(cor_sanitation_poisoning, 2)), 
+           hjust = 1.1, vjust = 1.5, size = 5, color = "red") +
+  theme_minimal()
+
+plot1
+plot2
+plot3
+plot4
+plot5
+```
+
+### Grid
+
+```{r, echo=FALSE, results='asis'}
+# Convert the ggplot objects to plotly objects
+plot1 <- ggplotly(plot1, tooltip = "text")
+plot2 <- ggplotly(plot2, tooltip = "text")
+plot3 <- ggplotly(plot3, tooltip = "text")
+plot4 <- ggplotly(plot4, tooltip = "text")
+plot5 <- ggplotly(plot5, tooltip = "text")
+
+# Print the plots
+plot1
+plot2
+plot3
+plot4
+plot5
+```
+
+```{r}
+
+subplot(plot1, plot2, plot3, plot4, plot5, nrows = 3, shareX = TRUE, shareY = TRUE)
 ```
