@@ -1901,7 +1901,7 @@ kable(head(scaled_df_table_with_country))
 :::
 
 ::: {.column width="27%"}
-Elbow at 3, so we choose k=3
+- Elbow at 3, so we choose k=3
 :::
 
 :::
